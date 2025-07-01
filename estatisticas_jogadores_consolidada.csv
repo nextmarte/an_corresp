@@ -1,4 +1,4 @@
-Player,Age,Position,Shots,ShotsOT,KeyPasses,PA%,AerialsWon,Touches,Rating,Team,Passes,Crosses,AccCrosses,LongBalls,AccLongBalls,ThroughBalls,AccThroughBalls,Dribbles,Fouled,Offsides,Dispossessed,UnsuccessfulTouches,TotalTackles,Interceptions,Clearances,BlockedShots,Fouls
+Player,Age,Position,Shots,ShotsOT,KeyPasses,PA,AerialsWon,Touches,Rating,Team,Passes,Crosses,AccCrosses,LongBalls,AccLongBalls,ThroughBalls,AccThroughBalls,Dribbles,Fouled,Offsides,Dispossessed,UnsuccessfulTouches,TotalTackles,Interceptions,Clearances,BlockedShots,Fouls
 Yann Sommer,36,GK,0,0,0,96.4,0,32,5.22,Inter,28,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0
 Matteo Darmian,35,DC,0,0,0,87.5,2,58,6.24,Inter,40,2,1,3,1,0,0,0,2,0,1,0,2,1,0,0,3
 Alessandro Bastoni,26,DC,0,0,0,84.0,2,64,6.03,Inter,50,1,0,6,3,1,0,0,0,0,0,0,0,1,0,1,2

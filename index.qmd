@@ -17,7 +17,7 @@ lang: pt
 
 Este documento apresenta uma Análise de Correspondência (CA) aplicada às estatísticas de jogadores do Fluminense e Inter de Milão. A técnica de CA é particularmente útil para analisar dados categóricos e explorar relações entre variáveis qualitativas.
 
-A análise se baseia nas estatísticas de desempenho dos jogadores, categorizadas de acordo com sua posição em campo. O objetivo é identificar padrões de associação entre as posições dos jogadores e suas características de desempenho, representadas por variáveis categóricas derivadas das estatísticas originais.
+A análise se baseia nas estatísticas de desempenho dos jogadores, categorizadas de acordo com sua posição em campo e seu time. O objetivo é identificar padrões de associação entre as posições específicas de cada time e suas características de desempenho, representadas por variáveis categóricas derivadas das estatísticas originais.
 
 ## Carregamento e Preparação dos Dados
 
@@ -38,11 +38,11 @@ dados <- read.csv("estatisticas_jogadores_consolidada.csv", stringsAsFactors = F
 
 # Visualizar estrutura dos dados
 glimpse(dados)
+
 ```
 
-
-Agrupamento por Posição
-Primeiro, vamos agrupar os jogadores por posição em campo para reduzir a dimensionalidade dos dados. As posições serão simplificadas em categorias mais amplas:
+# Agrupamento por Posição e Time
+Primeiro, vamos agrupar os jogadores por posição em campo para reduzir a dimensionalidade dos dados. As posições serão simplificadas em categorias mais amplas, e combinaremos essas posições com o time do jogador:
 
 ```{r}
 # Mapear as posições detalhadas para categorias mais amplas
@@ -58,15 +58,19 @@ dados <- dados %>%
     TRUE ~ "Outros"
   ))
 
-# Visualizar a distribuição de jogadores por posição agrupada
-table(dados$PosicaoAgrupada, dados$Team)
+# Criar variável que combina posição e time
+dados <- dados %>%
+  mutate(Posicao_Time = paste(PosicaoAgrupada, Team, sep = "_"))
+
+# Visualizar a distribuição de jogadores por posição agrupada e time
+table(dados$Posicao_Time)
 ```
 
-Conversão de Estatísticas Numéricas em Variáveis Categóricas
-Agora, vamos converter as principais estatísticas numéricas em variáveis categóricas, usando quartis para definir as categorias:
+# Conversão de Estatísticas Numéricas em Variáveis Categóricas
+Agora, vamos converter as principais estatísticas numéricas em variáveis categóricas binárias (Alto/Baixo), usando a mediana como ponto de corte:
 
 ```{r}
-# Função ajustada para categorizar variáveis numéricas com apenas duas categorias em português
+# Função para categorizar variáveis numéricas com apenas duas categorias em português
 categorizar_variavel <- function(x, prefixo) {
   # Verificar se o vetor tem elementos
   if (length(x) == 0) {
@@ -110,7 +114,7 @@ categorizar_variavel <- function(x, prefixo) {
 mapear_nome_variavel <- function(prefixo) {
   # Dicionário de tradução
   traducoes <- list(
-    "Shots" = "Chutes",
+    "ShotsOT" = "ChutesNoGol",
     "KeyPasses" = "PassesChave",
     "PA" = "PrecisaoPasses",
     "AerialsWon" = "DuelosAereos",
@@ -134,7 +138,7 @@ mapear_nome_variavel <- function(prefixo) {
 
 # Selecionar as variáveis numéricas mais relevantes para categorização
 variaveis_para_categorizar <- c(
-  "Shots", "KeyPasses", "PA%", "AerialsWon", "Touches", 
+  "ShotsOT", "KeyPasses", "PA", "AerialsWon", "Touches", 
   "Passes", "Crosses", "Dribbles", "Fouled", "TotalTackles", 
   "Interceptions", "Clearances"
 )
@@ -182,19 +186,19 @@ cat("Variáveis categorizadas criadas:",
 head(dados_categorizados[, grep("_Cat$", names(dados_categorizados))])
 ```
 
-Construção da Tabela de Contingência
-Agora, vamos criar tabelas de contingência cruzando as posições dos jogadores (linhas) com as categorias das estatísticas (colunas):
+# Construção da Tabela de Contingência por Posição e Time
+Agora, vamos criar tabelas de contingência cruzando as posições específicas de cada time (linhas) com as categorias das estatísticas (colunas):
 
 ```{r}
-# Função para criar tabela de contingência para uma variável categórica
-criar_tabela_contingencia <- function(dados, var_categorica) {
-  # Criar tabela de contingência
-  tabela <- table(dados$PosicaoAgrupada, dados[[var_categorica]])
-  return(tabela)
-}
-
 # Criar tabelas de contingência para cada variável categorizada
 variaveis_categorizadas <- grep("_Cat$", names(dados_categorizados), value = TRUE)
+
+# Função para criar tabela de contingência com Posicao_Time como linhas
+criar_tabela_contingencia <- function(dados, var_categorica) {
+  # Criar tabela de contingência
+  tabela <- table(dados$Posicao_Time, dados[[var_categorica]])
+  return(tabela)
+}
 
 # Criar uma tabela de contingência completa
 tabela_completa <- NULL
@@ -214,7 +218,7 @@ for (var in variaveis_categorizadas) {
 
 # Mostrar a tabela de contingência (primeiras colunas)
 kable(tabela_completa[, 1:min(10, ncol(tabela_completa))], 
-      caption = "Tabela de Contingência (primeiras 10 colunas)") %>%
+      caption = "Tabela de Contingência por Posição e Time (primeiras 10 colunas)") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 # Verificar as dimensões da tabela
@@ -225,7 +229,7 @@ max_dims <- min(nrow(tabela_completa) - 1, ncol(tabela_completa) - 1)
 cat("Número máximo de dimensões possíveis:", max_dims, "\n")
 ```
 
-Execução da Análise de Correspondência
+# Execução da Análise de Correspondência
 Com a tabela de contingência pronta, vamos realizar a Análise de Correspondência:
 
 ```{r}
@@ -243,26 +247,33 @@ var_acumulada <- cumsum(ca_result$eig[, 2])
 print(var_acumulada)
 ```
 
-Avaliação da Qualidade da Representação
+# Avaliação da Qualidade da Representação
 Vamos avaliar a qualidade da representação das categorias no mapa perceptual:
 
 ```{r}
-# Contribuição das linhas (posições) para as dimensões
+# Contribuição das linhas (posições por time) para as dimensões
 row_contrib <- ca_result$row$contrib
 row_contrib_df <- as.data.frame(row_contrib)
-row_contrib_df$Posicao <- rownames(row_contrib_df)
+row_contrib_df$Posicao_Time <- rownames(row_contrib_df)
 row_contrib_long <- pivot_longer(row_contrib_df, 
-                                 cols = -Posicao, 
+                                 cols = -Posicao_Time, 
                                  names_to = "Dimensao", 
                                  values_to = "Contribuicao")
 
+# Extrair posição e time para melhor visualização
+row_contrib_long <- row_contrib_long %>%
+  mutate(
+    Posicao = sub("_.*$", "", Posicao_Time),
+    Time = sub("^.*_", "", Posicao_Time)
+  )
+
 # Visualizar contribuições das linhas
 ggplot(row_contrib_long %>% filter(Dimensao %in% c("Dim 1", "Dim 2", "Dim 3")), 
-       aes(x = Posicao, y = Contribuicao, fill = Dimensao)) +
+       aes(x = Posicao_Time, y = Contribuicao, fill = Dimensao)) +
   geom_bar(stat = "identity", position = "dodge") +
   theme_minimal() +
-  labs(title = "Contribuição das Posições para as Dimensões",
-       x = "Posição", y = "Contribuição (%)") +
+  labs(title = "Contribuição das Posições por Time para as Dimensões",
+       x = "Posição e Time", y = "Contribuição (%)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Contribuição das colunas (estatísticas) para as dimensões
@@ -289,15 +300,22 @@ ggplot(col_contrib_long, aes(x = reorder(Estatistica, Contribuicao),
        x = "Estatística", y = "Contribuição (%)")
 ```
 
-Visualização dos Resultados
+# Visualização dos Resultados
 Vamos criar visualizações do mapa perceptual da Análise de Correspondência:
 
 ```{r}
-# Criar um dataframe com as coordenadas das linhas (posições)
+# Criar um dataframe com as coordenadas das linhas (posições por time)
 row_coords <- as.data.frame(ca_result$row$coord[, 1:2])
-row_coords$Posicao <- rownames(row_coords)
+row_coords$Posicao_Time <- rownames(row_coords)
 # Renomeando as colunas para evitar problemas com espaços no nome
 names(row_coords)[1:2] <- c("Dim1", "Dim2")
+
+# Separar posição e time para melhor visualização
+row_coords <- row_coords %>%
+  mutate(
+    Posicao = sub("_.*$", "", Posicao_Time),
+    Time = sub("^.*_", "", Posicao_Time)
+  )
 
 # Criar um dataframe com as coordenadas das colunas (estatísticas)
 col_coords <- as.data.frame(ca_result$col$coord[, 1:2])
@@ -305,31 +323,15 @@ col_coords$Estatistica <- rownames(col_coords)
 # Renomeando as colunas para evitar problemas com espaços no nome
 names(col_coords)[1:2] <- c("Dim1", "Dim2")
 
-# Adicionar informações dos jogadores para colorir por time
-jogador_posicao <- dados_categorizados %>%
-  select(Player, Team, PosicaoAgrupada) %>%
-  rename(Posicao = PosicaoAgrupada)
-
-# Juntar com as coordenadas das linhas
-row_coords_with_team <- row_coords %>%
-  left_join(jogador_posicao, by = "Posicao") %>%
-  group_by(Posicao, Dim1, Dim2) %>%
-  summarise(
-    Inter_count = sum(Team == "Inter", na.rm = TRUE),
-    Fluminense_count = sum(Team == "Fluminense", na.rm = TRUE),
-    Team_predominant = ifelse(Inter_count > Fluminense_count, "Inter", "Fluminense"),
-    .groups = "drop"
-  )
-
-# Mapa perceptual - Biplot básico
+# Mapa perceptual - Biplot com posição_time
 ggplot() +
-  # Pontos das posições (linhas)
-  geom_point(data = row_coords_with_team, 
-             aes(x = Dim1, y = Dim2, color = Team_predominant),
+  # Pontos das posições por time (linhas)
+  geom_point(data = row_coords, 
+             aes(x = Dim1, y = Dim2, color = Time, shape = Posicao),
              size = 3) +
-  geom_text(data = row_coords_with_team, 
-            aes(x = Dim1, y = Dim2, label = Posicao), 
-            vjust = -1) +
+  geom_text(data = row_coords, 
+            aes(x = Dim1, y = Dim2, label = Posicao, color = Time), 
+            vjust = -1, hjust = 0.5, size = 3) +
   # Pontos das estatísticas (colunas) - apenas as mais contributivas
   geom_point(data = col_coords %>% 
                filter(Estatistica %in% top_cols), 
@@ -350,34 +352,68 @@ ggplot() +
                         "%) vs. Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)"),
        x = paste0("Dimensão 1 (", round(ca_result$eig[1, 2], 1), "%)"),
        y = paste0("Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)"),
-       color = "Time Predominante") +
-  theme(legend.position = "bottom")
+       color = "Time",
+       shape = "Posição") +
+  theme(legend.position = "right")
 ```
 
-Mapa Perceptual Usando factoextra
+# Visualizações com factoextra
 O pacote factoextra fornece visualizações mais elaboradas para Análise de Correspondência:
 
 ```{r}
-# Gráfico das linhas (posições)
-fviz_ca_row(ca_result, repel = TRUE) +
+# Gráfico das linhas (posições por time) com factoextra
+fviz_ca_row(ca_result, 
+           repel = TRUE, 
+           col.row = as.factor(row_coords$Time)) +
   theme_minimal() +
-  labs(title = "Mapa Perceptual das Posições")
-
-# Gráfico das colunas (estatísticas)
-fviz_ca_col(ca_result, repel = TRUE) +
-  theme_minimal() +
-  labs(title = "Mapa Perceptual das Estatísticas")
+  labs(title = "Mapa Perceptual das Posições por Time",
+       x = "Dimensão 1",
+       y = "Dimensão 2")
 
 # Biplot com linhas e colunas
 fviz_ca_biplot(ca_result, 
               repel = TRUE,
-              col.row = "darkblue",
-              col.col = "red",
-              title = "Mapa Perceptual Completo: Posições e Estatísticas") +
+              col.row = as.factor(row_coords$Time),
+              col.col = "green",
+              title = "Mapa Perceptual Completo: Posições por Time e Estatísticas") +
   theme_minimal()
 ```
 
-Análise e Interpretação
+# Comparação Direta entre Posições Equivalentes
+Para entender melhor as diferenças táticas entre os times, vamos comparar diretamente as mesmas posições nos dois times:
+
+```{r}
+# Identificar as posições que existem em ambos os times
+posicoes_comuns <- dados_categorizados %>%
+  group_by(PosicaoAgrupada) %>%
+  summarise(Times = n_distinct(Team)) %>%
+  filter(Times > 1) %>%
+  pull(PosicaoAgrupada)
+
+# Filtrar apenas as posições comuns do mapa
+posicoes_comparacao <- row_coords %>%
+  filter(Posicao %in% posicoes_comuns)
+
+# Visualizar comparação direta entre posições equivalentes nos dois times
+ggplot(posicoes_comparacao, aes(x = Dim1, y = Dim2, color = Time, label = Posicao)) +
+  geom_point(size = 4) +
+  geom_text(vjust = -1, size = 3.5) +
+  # Conectar posições equivalentes com linhas
+  geom_line(aes(group = Posicao), color = "gray50", linetype = "dashed") +
+  # Adicionar linhas de referência nos eixos
+  geom_hline(yintercept = 0, linetype = "dotted", color = "gray70") +
+  geom_vline(xintercept = 0, linetype = "dotted", color = "gray70") +
+  # Estética do gráfico
+  theme_minimal() +
+  scale_color_manual(values = c("Inter" = "blue", "Fluminense" = "darkgreen")) +
+  labs(title = "Comparação de Posições Equivalentes entre Inter de Milão e Fluminense",
+       subtitle = "As linhas conectam posições equivalentes nos dois times",
+       x = "Dimensão 1", 
+       y = "Dimensão 2") +
+  theme(legend.position = "bottom")
+```
+
+# Análise e Interpretação
 Vamos analisar as dimensões obtidas e interpretar o significado das associações encontradas:
 
 ```{r}
@@ -405,12 +441,7 @@ kable(top_dim1_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 1"
 
 kable(top_dim2_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 2") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
-```
 
-Interpretação das Dimensões
-Com base nas contribuições das categorias, podemos interpretar o significado de cada dimensão:
-
-```{r}
 # Criar um dataframe com as coordenadas e contribuições
 interpretacao <- data.frame(
   Dimensao = c("Dimensão 1", "Dimensão 2"),
@@ -419,8 +450,8 @@ interpretacao <- data.frame(
     paste0(round(ca_result$eig[2, 2], 2), "%")
   ),
   Interpretacao = c(
-    "Esta dimensão separa posições ofensivas vs. defensivas, com estatísticas de passe e toque contrapondo-se a estatísticas de desarme e interceptação.",
-    "Esta dimensão contrasta posições de criação vs. finalização, com estatísticas de passes-chave e cruzamentos vs. chutes e gols."
+    "Esta dimensão separa as posições por características técnicas e táticas entre os times, destacando as diferenças de estilo de jogo entre Inter de Milão e Fluminense.",
+    "Esta dimensão contrasta funções específicas das posições, como defensivas vs. ofensivas, independentemente do time."
   )
 )
 
@@ -429,219 +460,162 @@ kable(interpretacao, caption = "Interpretação das Dimensões") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-## Análise de Correspondência com Posição e Time
+# Visualização 3D da Análise de Correspondência
 
-Nesta seção, vamos repetir a Análise de Correspondência considerando a combinação de posição e time dos jogadores.
+Para explorar ainda mais as relações entre posições por time e estatísticas, vamos criar uma visualização tridimensional interativa que incorpora as três primeiras dimensões da Análise de Correspondência:
 
-```{r}
+```{r visualization_3d}
+#| warning: false
+#| message: false
 
-# Adicionar uma variável combinando posição e time
-dados_categorizados <- dados_categorizados %>%
-  mutate(Posicao_Time = paste(PosicaoAgrupada, Team, sep = "_"))
+# Carregar pacote para visualização 3D
+library(plotly)
 
-# Visualizar a distribuição de jogadores por posição e time
-table(dados_categorizados$Posicao_Time)
+# Extrair as coordenadas para as três primeiras dimensões
+row_coords_3d <- as.data.frame(ca_result$row$coord[, 1:3])
+row_coords_3d$Posicao_Time <- rownames(row_coords_3d)
+names(row_coords_3d)[1:3] <- c("Dim1", "Dim2", "Dim3")
 
-# Agora vamos criar a tabela de contingência com Posicao_Time como linhas
-criar_tabela_contingencia_time <- function(dados, var_categorica) {
-  # Criar tabela de contingência
-  tabela <- table(dados$Posicao_Time, dados[[var_categorica]])
-  return(tabela)
-}
-
-# Criar uma tabela de contingência completa com Posicao_Time
-tabela_completa_time <- NULL
-
-for (var in variaveis_categorizadas) {
-  tabela_temp <- criar_tabela_contingencia_time(dados_categorizados, var)
-  
-  if (is.null(tabela_completa_time)) {
-    tabela_completa_time <- tabela_temp
-  } else {
-    # Adicionar apenas se a tabela tiver ao menos uma coluna não vazia
-    if (sum(colSums(tabela_temp) > 0) > 0) {
-      tabela_completa_time <- cbind(tabela_completa_time, tabela_temp)
-    }
-  }
-}
-
-# Mostrar a tabela de contingência (primeiras colunas)
-kable(tabela_completa_time[, 1:min(10, ncol(tabela_completa_time))], 
-      caption = "Tabela de Contingência por Posição e Time (primeiras 10 colunas)") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
-# Verificar as dimensões da tabela
-cat("Dimensões da tabela de contingência:", dim(tabela_completa_time), "\n")
-
-# Calcular o número máximo de dimensões possíveis
-max_dims_time <- min(nrow(tabela_completa_time) - 1, ncol(tabela_completa_time) - 1)
-cat("Número máximo de dimensões possíveis:", max_dims_time, "\n")
-
-# Realizar a análise de correspondência com a nova tabela
-ca_result_time <- CA(tabela_completa_time, graph = FALSE)
-
-# Sumário dos resultados
-summary(ca_result_time)
-
-# Verificar a inércia total e a contribuição de cada dimensão
-print(ca_result_time$eig)
-
-# Calcular a porcentagem acumulada de variância explicada
-var_acumulada_time <- cumsum(ca_result_time$eig[, 2])
-print(var_acumulada_time)
-```
-
-```{r}
-# Criar um dataframe com as coordenadas das linhas (posições por time)
-row_coords_time <- as.data.frame(ca_result_time$row$coord[, 1:2])
-row_coords_time$Posicao_Time <- rownames(row_coords_time)
-# Renomeando as colunas para evitar problemas com espaços no nome
-names(row_coords_time)[1:2] <- c("Dim1", "Dim2")
-
-# Criar um dataframe com as coordenadas das colunas (estatísticas)
-col_coords_time <- as.data.frame(ca_result_time$col$coord[, 1:2])
-col_coords_time$Estatistica <- rownames(col_coords_time)
-# Renomeando as colunas para evitar problemas com espaços no nome
-names(col_coords_time)[1:2] <- c("Dim1", "Dim2")
-
-# Separar posição e time para melhor visualização
-row_coords_time <- row_coords_time %>%
+# Separar posição e time
+row_coords_3d <- row_coords_3d %>%
   mutate(
     Posicao = sub("_.*$", "", Posicao_Time),
     Time = sub("^.*_", "", Posicao_Time)
   )
 
-# Contribuição das colunas (estatísticas) para as dimensões
-col_contrib_time <- ca_result_time$col$contrib
-# Selecionar as colunas com maior contribuição para Dim 1 e Dim 2
-top_cols_dim1_time <- names(sort(col_contrib_time[, 1], decreasing = TRUE)[1:10])
-top_cols_dim2_time <- names(sort(col_contrib_time[, 2], decreasing = TRUE)[1:10])
-top_cols_time <- unique(c(top_cols_dim1_time, top_cols_dim2_time))
+# Extrair coordenadas para as colunas (estatísticas)
+col_coords_3d <- as.data.frame(ca_result$col$coord[, 1:3])
+col_coords_3d$Estatistica <- rownames(col_coords_3d)
+names(col_coords_3d)[1:3] <- c("Dim1", "Dim2", "Dim3")
 
-# Mapa perceptual - Biplot com posição_time
-ggplot() +
-  # Pontos das posições por time (linhas)
-  geom_point(data = row_coords_time, 
-             aes(x = Dim1, y = Dim2, color = Time, shape = Posicao),
-             size = 3) +
-  geom_text(data = row_coords_time, 
-            aes(x = Dim1, y = Dim2, label = Posicao, color = Time), 
-            vjust = -1, hjust = 0.5, size = 3) +
-  # Pontos das estatísticas (colunas) - apenas as mais contributivas
-  geom_point(data = col_coords_time %>% 
-               filter(Estatistica %in% top_cols_time), 
-             aes(x = Dim1, y = Dim2), 
-             shape = 17, color = "darkred") +
-  geom_text(data = col_coords_time %>% 
-              filter(Estatistica %in% top_cols_time), 
-            aes(x = Dim1, y = Dim2, label = Estatistica), 
-            vjust = 1, size = 3, color = "darkred") +
-  # Adicionar linhas de referência nos eixos
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
-  # Estética do gráfico
-  theme_minimal() +
-  scale_color_manual(values = c("Inter" = "blue", "Fluminense" = "darkgreen")) +
-  labs(title = "Mapa Perceptual da Análise de Correspondência",
-       subtitle = paste0("Dimensão 1 (", round(ca_result_time$eig[1, 2], 1), 
-                        "%) vs. Dimensão 2 (", round(ca_result_time$eig[2, 2], 1), "%)"),
-       x = paste0("Dimensão 1 (", round(ca_result_time$eig[1, 2], 1), "%)"),
-       y = paste0("Dimensão 2 (", round(ca_result_time$eig[2, 2], 1), "%)"),
-       color = "Time",
-       shape = "Posição") +
-  theme(legend.position = "right")
-```
+# Filtrar apenas as estatísticas mais contributivas
+top_cols_dim3 <- names(sort(ca_result$col$contrib[, 3], decreasing = TRUE)[1:10])
+top_cols_3d <- unique(c(top_cols, top_cols_dim3))
 
-```{r}
-# Gráfico das linhas (posições por time) com factoextra
-fviz_ca_row(ca_result_time, 
-           repel = TRUE, 
-           col.row = as.factor(row_coords_time$Time)) +
-  theme_minimal() +
-  labs(title = "Mapa Perceptual das Posições por Time",
-       x = "Dimensão 1",
-       y = "Dimensão 2")
+col_coords_3d_filtered <- col_coords_3d %>%
+  filter(Estatistica %in% top_cols_3d)
 
-# Biplot com linhas e colunas
-fviz_ca_biplot(ca_result_time, 
-              repel = TRUE,
-              col.row = as.factor(row_coords_time$Time),
-              col.col = "red",
-              title = "Mapa Perceptual Completo: Posições por Time e Estatísticas") +
-  theme_minimal()
-```
-
-```{r}
-# Extrair as contribuições das categorias para cada dimensão
-dim1_contrib_col_time <- sort(col_contrib_time[, 1], decreasing = TRUE)
-dim2_contrib_col_time <- sort(col_contrib_time[, 2], decreasing = TRUE)
-
-# Top categorias contribuindo para a Dimensão 1
-top_dim1_time <- head(dim1_contrib_col_time, 5)
-top_dim1_df_time <- data.frame(
-  Estatistica = names(top_dim1_time),
-  Contribuicao = top_dim1_time
-)
-
-# Top categorias contribuindo para a Dimensão 2
-top_dim2_time <- head(dim2_contrib_col_time, 5)
-top_dim2_df_time <- data.frame(
-  Estatistica = names(top_dim2_time),
-  Contribuicao = top_dim2_time
-)
-
-# Exibir resultados
-kable(top_dim1_df_time, caption = "Top 5 Estatísticas Contribuindo para Dimensão 1") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-
-kable(top_dim2_df_time, caption = "Top 5 Estatísticas Contribuindo para Dimensão 2") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-
-# Criar um dataframe com as coordenadas e contribuições para a nova análise
-interpretacao_time <- data.frame(
-  Dimensao = c("Dimensão 1", "Dimensão 2"),
-  Variancia_Explicada = c(
-    paste0(round(ca_result_time$eig[1, 2], 2), "%"),
-    paste0(round(ca_result_time$eig[2, 2], 2), "%")
-  ),
-  Interpretacao = c(
-    "Esta dimensão separa as posições por características técnicas e táticas entre os times, destacando as diferenças de estilo de jogo entre Inter de Milão e Fluminense.",
-    "Esta dimensão contrasta funções específicas das posições, como defensivas vs. ofensivas, independentemente do time."
+# Criar gráfico 3D das posições por time
+fig_rows <- plot_ly() %>%
+  add_trace(
+    data = row_coords_3d,
+    x = ~Dim1, y = ~Dim2, z = ~Dim3,
+    color = ~Time,
+    symbol = ~Posicao,
+    type = "scatter3d",
+    mode = "markers+text",
+    text = ~Posicao,
+    textposition = "top center",
+    marker = list(size = 6),
+    name = ~paste(Posicao, Time)
   )
-)
 
-# Exibir a interpretação
-kable(interpretacao_time, caption = "Interpretação das Dimensões (Análise por Posição_Time)") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+# Adicionar as informações de dimensões
+fig_rows <- fig_rows %>%
+  layout(
+    scene = list(
+      xaxis = list(title = paste0("Dimensão 1 (", round(ca_result$eig[1, 2], 1), "%)")),
+      yaxis = list(title = paste0("Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)")),
+      zaxis = list(title = paste0("Dimensão 3 (", round(ca_result$eig[3, 2], 1), "%)"))
+    ),
+    title = "Visualização 3D das Posições por Time"
+  )
+
+fig_rows
 ```
 
 ```{r}
-# Identificar as posições que existem em ambos os times
-posicoes_comuns <- dados_categorizados %>%
-  group_by(PosicaoAgrupada) %>%
-  summarise(Times = n_distinct(Team)) %>%
-  filter(Times > 1) %>%
-  pull(PosicaoAgrupada)
+# Criar gráfico 3D combinando posições e estatísticas (biplot 3D)
+fig_biplot <- plot_ly() %>%
+  # Posições por time
+  add_trace(
+    data = row_coords_3d,
+    x = ~Dim1, y = ~Dim2, z = ~Dim3,
+    color = ~Time,
+    symbol = ~Posicao,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(size = 6),
+    name = ~paste(Posicao, Time),
+    text = ~Posicao,
+    hoverinfo = "text"
+  ) %>%
+  # Estatísticas
+  add_trace(
+    data = col_coords_3d_filtered,
+    x = ~Dim1, y = ~Dim2, z = ~Dim3,
+    type = "scatter3d",
+    mode = "markers+text",
+    marker = list(color = "darkred", symbol = "diamond", size = 4),
+    text = ~Estatistica,
+    textposition = "top center",
+    name = "Estatísticas",
+    hoverinfo = "text"
+  )
 
-# Filtrar apenas as posições comuns do mapa
-posicoes_comparacao <- row_coords_time %>%
+# Adicionar as informações de dimensões
+fig_biplot <- fig_biplot %>%
+  layout(
+    scene = list(
+      xaxis = list(title = paste0("Dimensão 1 (", round(ca_result$eig[1, 2], 1), "%)")),
+      yaxis = list(title = paste0("Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)")),
+      zaxis = list(title = paste0("Dimensão 3 (", round(ca_result$eig[3, 2], 1), "%)"))
+    ),
+    title = "Mapa Perceptual 3D: Posições por Time e Estatísticas"
+  )
+
+fig_biplot
+```
+
+```{r}
+# Filtrar posições comuns em ambos os times
+posicoes_comparacao_3d <- row_coords_3d %>%
   filter(Posicao %in% posicoes_comuns)
 
-# Visualizar comparação direta entre posições equivalentes nos dois times
-ggplot(posicoes_comparacao, aes(x = Dim1, y = Dim2, color = Time, label = Posicao)) +
-  geom_point(size = 4) +
-  geom_text(vjust = -1, size = 3.5) +
-  # Conectar posições equivalentes com linhas
-  geom_line(aes(group = Posicao), color = "gray50", linetype = "dashed") +
-  # Adicionar linhas de referência nos eixos
-  geom_hline(yintercept = 0, linetype = "dotted", color = "gray70") +
-  geom_vline(xintercept = 0, linetype = "dotted", color = "gray70") +
-  # Estética do gráfico
-  theme_minimal() +
-  scale_color_manual(values = c("Inter" = "blue", "Fluminense" = "darkgreen")) +
-  labs(title = "Comparação de Posições Equivalentes entre Inter de Milão e Fluminense",
-       subtitle = "As linhas conectam posições equivalentes nos dois times",
-       x = "Dimensão 1", 
-       y = "Dimensão 2") +
-  theme(legend.position = "bottom")
+# Criar um gráfico 3D apenas com as posições comuns
+fig_comparison <- plot_ly() %>%
+  add_trace(
+    data = posicoes_comparacao_3d,
+    x = ~Dim1, y = ~Dim2, z = ~Dim3,
+    color = ~Time,
+    symbol = ~Posicao,
+    type = "scatter3d",
+    mode = "markers+text",
+    text = ~Posicao,
+    textposition = "top center",
+    marker = list(size = 6),
+    name = ~paste(Posicao, Time)
+  )
+
+# Adicionar linhas conectando posições equivalentes
+for (pos in posicoes_comuns) {
+  pos_data <- posicoes_comparacao_3d %>% filter(Posicao == pos)
+  
+  if (nrow(pos_data) == 2) {
+    fig_comparison <- fig_comparison %>%
+      add_trace(
+        x = pos_data$Dim1,
+        y = pos_data$Dim2,
+        z = pos_data$Dim3,
+        type = "scatter3d",
+        mode = "lines",
+        line = list(color = 'gray', width = 3, dash = 'dash'),
+        showlegend = FALSE,
+        hoverinfo = "none"
+      )
+  }
+}
+
+# Adicionar as informações de dimensões
+fig_comparison <- fig_comparison %>%
+  layout(
+    scene = list(
+      xaxis = list(title = paste0("Dimensão 1 (", round(ca_result$eig[1, 2], 1), "%)")),
+      yaxis = list(title = paste0("Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)")),
+      zaxis = list(title = paste0("Dimensão 3 (", round(ca_result$eig[3, 2], 1), "%)"))
+    ),
+    title = "Comparação 3D de Posições Equivalentes entre Inter de Milão e Fluminense"
+  )
+
+fig_comparison
 ```
