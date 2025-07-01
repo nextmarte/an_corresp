@@ -1,0 +1,32 @@
+Player,Age,Position,Shots,ShotsOT,KeyPasses,PA%,AerialsWon,Touches,Rating,Team,Passes,Crosses,AccCrosses,LongBalls,AccLongBalls,ThroughBalls,AccThroughBalls,Dribbles,Fouled,Offsides,Dispossessed,UnsuccessfulTouches,TotalTackles,Interceptions,Clearances,BlockedShots,Fouls
+Yann Sommer,36,GK,0,0,0,96.4,0,32,5.22,Inter,28,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0
+Matteo Darmian,35,DC,0,0,0,87.5,2,58,6.24,Inter,40,2,1,3,1,0,0,0,2,0,1,0,2,1,0,0,3
+Alessandro Bastoni,26,DC,0,0,0,84.0,2,64,6.03,Inter,50,1,0,6,3,1,0,0,0,0,0,0,0,1,0,1,2
+Stefan de Vrij,33,DC,2,0,0,90.8,4,93,6.87,Inter,76,0,0,4,2,0,0,1,0,0,0,0,4,2,4,0,0
+Denzel Dumfries,29,DMR,1,0,0,92.9,0,22,5.78,Inter,14,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,2
+Federico Dimarco,27,DML,5,2,2,78.9,0,72,6.58,Inter,52,6,1,4,2,0,0,0,0,0,0,1,0,0,0,0,3
+Kristjan Asllani,23,MC,0,0,0,95.7,0,54,6.04,Inter,47,3,0,4,4,0,0,0,1,0,0,0,1,0,0,0,1
+Henrikh Mkhitaryan,36,MC,0,0,1,84.6,1,33,6.16,Inter,26,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0
+Nicolò Barella,28,MC,0,0,1,90.2,0,80,6.39,Inter,61,4,0,7,4,1,0,1,3,0,1,0,1,1,0,0,1
+Lautaro Martínez,27,FW,4,2,2,69.6,3,39,6.83,Inter,23,1,0,0,0,0,0,0,3,1,2,2,0,1,0,0,1
+Marcus Thuram,27,FW,1,0,1,80.0,2,23,6.27,Inter,10,0,0,0,0,0,0,1,1,1,1,3,1,0,1,0,1
+Valentín Carboni,20,Sub,0,0,1,72.2,1,31,6.33,Inter,18,1,0,1,1,0,0,2,3,0,2,1,0,0,0,0,0
+Carlos Augusto,26,Sub,1,0,1,93.3,2,21,6.31,Inter,15,1,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0
+Luis Henrique,23,Sub,1,0,1,66.7,0,18,5.97,Inter,9,4,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+Petar Sucic,21,Sub,0,0,0,93.6,0,36,6.33,Inter,31,0,0,4,4,0,0,1,0,0,0,1,2,0,0,0,1
+Sebastiano Esposito,22,Sub,1,0,1,100.0,1,13,6.43,Inter,7,2,2,0,0,0,0,0,0,1,0,0,1,0,0,0,0
+Fábio,44,GK,0,0,0,40.0,0,30,7.61,Fluminense,20,0,0,18,6,0,0,0,0,0,0,0,0,0,3,0,0
+Juan Pablo Freytes,25,DC,0,0,0,82.1,0,46,6.94,Fluminense,28,0,0,9,6,0,0,1,1,0,0,1,1,0,7,1,4
+Thiago Silva,40,DC,0,0,1,83.3,0,36,7.39,Fluminense,24,0,0,7,3,0,0,0,0,0,0,0,3,1,7,0,0
+Ignácio,28,DC,0,0,0,66.7,4,45,7.89,Fluminense,21,1,0,3,0,0,0,0,0,1,0,1,6,3,8,0,3
+Samuel Xavier,35,MR,1,0,0,64.7,0,37,6.49,Fluminense,17,1,1,0,0,0,0,0,1,0,0,1,0,0,4,0,0
+Martinelli,23,MC,0,0,0,88.5,1,33,6.41,Fluminense,26,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1
+Facundo Bernal,21,MC,1,0,0,100.0,1,32,7.1,Fluminense,18,0,0,1,1,0,0,0,1,0,0,0,3,3,2,0,1
+Renê,32,ML,0,0,1,56.3,2,41,7.0,Fluminense,16,2,1,4,0,0,0,0,1,0,0,2,1,1,6,0,2
+Nonato,27,AMC,0,0,0,83.3,0,22,6.17,Fluminense,12,0,0,0,0,0,0,0,1,1,0,2,0,1,0,0,2
+Germán Cano,37,FW,3,1,1,66.7,0,24,7.16,Fluminense,12,0,0,0,0,0,0,0,3,0,1,1,1,0,1,0,0
+Jhon Arias,27,FW,4,2,4,75.9,0,62,7.84,Fluminense,29,4,2,1,0,0,0,3,3,0,2,3,1,0,0,1,1
+Everaldo,33,Sub,0,0,0,40.0,1,9,6.38,Fluminense,5,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0
+Thiago Santos,35,Sub,0,0,0,0.0,0,6,6.15,Fluminense,0,0,0,0,0,0,0,0,0,0,1,2,1,1,0,0,2
+Lima,29,Sub,1,0,0,60.0,0,10,6.09,Fluminense,5,0,0,0,0,0,0,0,2,1,0,0,0,0,1,0,0
+Hércules,24,Sub,1,1,0,42.9,1,11,7.17,Fluminense,7,0,0,3,1,0,0,0,0,0,0,1,0,0,1,0,0

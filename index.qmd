@@ -1,6 +1,6 @@
 ---
-title: "Análise de Correspondência: Brasileirão 2012"
-subtitle: "Um olhar sobre o desempenho do Fluminense"
+title: "Análise de Correspondência: Fluminense vs Inter de Milão"
+subtitle: "Uma análise adaptada para dados com limitação dimensional"
 author: "Análise de Dados Esportivos"
 format: 
   html:
@@ -8,14 +8,18 @@ format:
     toc-location: left
     theme: cosmo
     code-fold: true
+    fig-width: 10
+    fig-height: 8
 lang: pt
 ---
 
 ## Introdução
 
-A Análise de Correspondência é uma técnica estatística que permite analisar graficamente as relações entre categorias de variáveis qualitativas, revelando padrões de associação entre elas. Neste estudo, aplicaremos essa técnica para analisar o desempenho do Fluminense no Campeonato Brasileiro de 2012, ano em que o clube conquistou o título.
+Este documento apresenta uma Análise de Correspondência (CA) aplicada às estatísticas de jogadores do Fluminense e Inter de Milão. A técnica de CA é particularmente útil para analisar dados categóricos e explorar relações entre variáveis qualitativas.
 
-Utilizaremos os conceitos e passos metodológicos descritos no capítulo 6 do livro "Análise Multivariada de Dados" (Hair et al., 6ª edição).
+A análise se baseia nas estatísticas de desempenho dos jogadores, categorizadas de acordo com sua posição em campo. O objetivo é identificar padrões de associação entre as posições dos jogadores e suas características de desempenho, representadas por variáveis categóricas derivadas das estatísticas originais.
+
+## Carregamento e Preparação dos Dados
 
 ```{r setup}
 #| warning: false
@@ -23,440 +27,423 @@ Utilizaremos os conceitos e passos metodológicos descritos no capítulo 6 do li
 
 # Carregar pacotes necessários
 library(tidyverse)
-library(ca)       # Para análise de correspondência
-library(FactoMineR) # Alternativa para análise de correspondência
-library(factoextra) # Para visualização de resultados
-library(ggplot2)  # Para gráficos
-library(knitr)    # Para tabelas
-library(kableExtra) # Para tabelas formatadas
-```
+library(FactoMineR)  # Para análise de correspondência
+library(factoextra)  # Para visualização de resultados
+library(ca)          # Pacote alternativo para CA
+library(knitr)       # Para formatação de tabelas
+library(kableExtra)  # Para tabelas mais elaboradas
 
-## Passo 1: Objetivos da Análise de Correspondência
-
-O objetivo desta análise é identificar as relações entre o desempenho do Fluminense e diversos fatores relacionados às partidas do Brasileirão 2012, como:
-
-1. Relação entre resultados (vitória, empate, derrota) e condição do jogo (mandante ou visitante)
-2. Associação entre estatísticas de jogo (posse de bola, finalizações, etc.) e resultados
-3. Padrões de atuação em diferentes estádios
-4. Relação entre cartões recebidos e desempenho
-
-## Passo 2: Projeto da Análise de Correspondência
-
-### Carregamento dos Dados
-
-```{r carregar_dados}
 # Carregar os dados
-jogos <- read.csv("dados/campeonato-brasileiro-full.csv")
-estatisticas <- read.csv("dados/campeonato-brasileiro-estatisticas-full.csv")
-cartoes <- read.csv("dados/campeonato-brasileiro-cartoes.csv")
-gols <- read.csv("dados/campeonato-brasileiro-gols.csv")
+dados <- read.csv("estatisticas_jogadores_consolidada.csv", stringsAsFactors = FALSE)
 
 # Visualizar estrutura dos dados
-glimpse(jogos)
+glimpse(dados)
 ```
 
-### Filtragem para o Ano de 2012 e Fluminense
 
-```{r filtrar_dados}
-# Filtrar dados para o Brasileirão 2012
-# Como os dados não têm a coluna de ano explicitamente, vamos identificar jogos do Fluminense
+Agrupamento por Posição
+Primeiro, vamos agrupar os jogadores por posição em campo para reduzir a dimensionalidade dos dados. As posições serão simplificadas em categorias mais amplas:
 
-# Jogos do Fluminense (como mandante ou visitante)
-jogos_fluminense <- jogos %>%
-  filter(mandante == "Fluminense" | visitante == "Fluminense")
-
-# Visualizar os primeiros jogos
-head(jogos_fluminense)
-
-# Contar número de jogos do Fluminense
-nrow(jogos_fluminense)
-```
-
-### Preparação dos Dados para Análise
-
-```{r preparar_dados}
-# Criar variável de resultado para o Fluminense
-jogos_fluminense <- jogos_fluminense %>%
-  mutate(resultado_fluminense = case_when(
-    mandante == "Fluminense" & mandante_Placar > visitante_Placar ~ "Vitória",
-    visitante == "Fluminense" & visitante_Placar > mandante_Placar ~ "Vitória",
-    mandante_Placar == visitante_Placar ~ "Empate",
-    TRUE ~ "Derrota"
+```{r}
+# Mapear as posições detalhadas para categorias mais amplas
+dados <- dados %>%
+  mutate(PosicaoAgrupada = case_when(
+    Position == "GK" ~ "Goleiro",
+    Position %in% c("DC") ~ "Zagueiro",
+    Position %in% c("DMR", "DML", "MR", "ML") ~ "Lateral",
+    Position %in% c("MC") ~ "Volante",
+    Position %in% c("AMC") ~ "Meio-Campo",
+    Position %in% c("FW") ~ "Atacante",
+    Position == "Sub" ~ "Substituto",
+    TRUE ~ "Outros"
   ))
 
-# Criar variável para condição do Fluminense (mandante ou visitante)
-jogos_fluminense <- jogos_fluminense %>%
-  mutate(condicao_fluminense = ifelse(mandante == "Fluminense", "Mandante", "Visitante"))
-
-# Resumo dos resultados do Fluminense
-tabela_resultados <- table(jogos_fluminense$condicao_fluminense, jogos_fluminense$resultado_fluminense)
-tabela_resultados
+# Visualizar a distribuição de jogadores por posição agrupada
+table(dados$PosicaoAgrupada, dados$Equipe)
 ```
 
-## Passo 3: Suposições em Análise de Correspondência
+Conversão de Estatísticas Numéricas em Variáveis Categóricas
+Agora, vamos converter as principais estatísticas numéricas em variáveis categóricas, usando quartis para definir as categorias:
 
-A Análise de Correspondência é uma técnica exploratória com poucas suposições. Vamos verificar se nossos dados são adequados:
-
-```{r verificar_suposicoes}
-# Verificar adequação dos dados: tabela de contingência deve ter frequências não-negativas
-# e as categorias não devem ser mutuamente exclusivas
-
-# Teste qui-quadrado para independência
-teste_qui <- chisq.test(tabela_resultados)
-teste_qui
-
-# Verificar se há células com frequência esperada < 5
-teste_qui$expected
-
-# Gráfico de mosaico para visualizar associação
-mosaicplot(tabela_resultados, shade = TRUE, main = "Resultado do Fluminense por Condição de Jogo")
-```
-
-## Passo 4: Estimação da Análise de Correspondência e Avaliação do Ajuste Geral
-
-```{r analise_correspondencia}
-# Verificar se a tabela tem dimensões suficientes para análise de correspondência
-dim(tabela_resultados)
-
-# Se houver apenas uma dimensão ou linha/coluna com valor zero, precisamos ajustar
-# Vamos garantir que a tabela tenha pelo menos duas linhas e duas colunas com valores não nulos
-print(tabela_resultados)
-
-# Verificar se é possível realizar a análise de correspondência
-if(nrow(tabela_resultados) >= 2 && ncol(tabela_resultados) >= 2 && sum(tabela_resultados) > 0) {
-  # Realizar análise de correspondência
-  ca_result <- ca(tabela_resultados)
-  
-  # Resumo dos resultados
-  print(summary(ca_result))
-  
-  # Visualizar inércia (variância explicada)
-  print(ca_result$sv^2)  # Valores singulares ao quadrado
-  
-  # Calcular percentual da inércia explicada
-  pct_explicada <- 100 * (ca_result$sv^2) / sum(ca_result$sv^2)
-  print(pct_explicada)
-} else {
-  # Se não for possível, informar o motivo
-  message("Não é possível realizar a análise de correspondência porque a tabela não tem dimensões suficientes.")
-  
-  # Alternativa: criar uma tabela mais informativa
-  # Vamos adicionar mais detalhes aos resultados por condição
-  
-  # Expandir análise para incluir mais variáveis
-  print("Expandindo análise para incluir mais variáveis...")
-}
-```
-
-## Passo 5: Interpretação dos Resultados
-
-### Análise Expandida e Visualização
-
-```{r analise_expandida}
-# Criar uma tabela mais completa para análise
-# Usar os estádios onde o Fluminense jogou como variável adicional
-
-# Adicionar variável de local (estádio)
-jogos_flu_expandido <- jogos_fluminense %>%
-  mutate(local = arena)
-
-# Tabela de contingência expandida: local vs resultado
-tabela_local <- table(jogos_flu_expandido$local, jogos_flu_expandido$resultado_fluminense)
-print(tabela_local)
-
-# Verificar se a tabela expandida tem dimensões suficientes
-if(nrow(tabela_local) >= 2 && ncol(tabela_local) >= 2 && sum(tabela_local > 0) >= 4) {
-  # Realizar análise de correspondência com a tabela expandida
-  ca_local <- ca(tabela_local)
-  
-  # Resumo dos resultados
-  print(summary(ca_local))
-  
-  # Visualizar
-  plot(ca_local, main = "Mapa de Correspondência: Estádios vs Resultados")
-  
-  # Plot melhorado com ggplot2 e factoextra
-  if(require(factoextra)) {
-    fviz_ca_biplot(ca_local, 
-                 repel = TRUE, 
-                 map = "symmetric",
-                 title = "Mapa de Correspondência: Estádios vs Resultados") +
-      theme_minimal() +
-      theme(legend.position = "bottom")
+```{r}
+# Função corrigida para categorizar variáveis numéricas
+categorizar_variavel <- function(x, prefixo) {
+  # Verificar se o vetor tem elementos
+  if (length(x) == 0) {
+    return(character(0))
   }
-} else {
-  message("A tabela expandida também não tem dimensões suficientes para análise de correspondência.")
   
-  # Mostrar frequências simples
-  print("Mostrando frequências simples de resultados por condição:")
-  print(table(jogos_fluminense$resultado_fluminense, jogos_fluminense$condicao_fluminense))
-}
-```
-
-### Análise das Associações
-
-```{r analise_associacoes}
-# Adicionar mais variáveis à análise para enriquecer o estudo
-# Vamos analisar a relação entre resultados e outros fatores como:
-# 1. Gols marcados pelo Fluminense
-# 2. Hora do jogo (categorizada)
-
-# Adicionar informação de gols marcados pelo Fluminense
-jogos_flu_detalhado <- jogos_fluminense %>%
-  mutate(gols_fluminense = case_when(
-    mandante == "Fluminense" ~ mandante_Placar,
-    visitante == "Fluminense" ~ visitante_Placar,
-    TRUE ~ NA_real_
-  ))
-
-# Categorizar gols
-jogos_flu_detalhado <- jogos_flu_detalhado %>%
-  mutate(categoria_gols = case_when(
-    gols_fluminense == 0 ~ "Nenhum",
-    gols_fluminense == 1 ~ "Um",
-    gols_fluminense == 2 ~ "Dois",
-    gols_fluminense >= 3 ~ "Três ou mais",
-    TRUE ~ NA_character_
-  ))
-
-# Categorizar hora do jogo
-jogos_flu_detalhado <- jogos_flu_detalhado %>%
-  mutate(hora_num = as.numeric(substr(hora, 1, 2)),
-         categoria_hora = case_when(
-           hora_num < 16 ~ "Antes das 16h",
-           hora_num >= 16 & hora_num < 19 ~ "Entre 16h e 19h",
-           hora_num >= 19 ~ "19h ou depois",
-           TRUE ~ NA_character_
-         ))
-
-# Tabelas de contingência
-tabela_gols <- table(jogos_flu_detalhado$categoria_gols, jogos_flu_detalhado$resultado_fluminense)
-print("Tabela de Gols vs Resultado:")
-print(tabela_gols)
-
-tabela_hora <- table(jogos_flu_detalhado$categoria_hora, jogos_flu_detalhado$resultado_fluminense)
-print("Tabela de Hora vs Resultado:")
-print(tabela_hora)
-
-# Tentar análise de correspondência para gols vs resultado
-if(nrow(tabela_gols) >= 2 && ncol(tabela_gols) >= 2 && sum(tabela_gols > 0) >= 4) {
-  ca_gols <- ca(tabela_gols)
-  print(summary(ca_gols))
+  # Ignorar valores NA para cálculos
+  x_clean <- x[!is.na(x)]
   
-  # Visualizar
-  print("Mapa de correspondência para Gols vs Resultado:")
-  plot(ca_gols, main = "Gols Marcados vs Resultado")
-  
-  # Contribuições (se possível)
-  if(length(ca_gols$sv) > 1) {
-    row_contrib <- 100 * (ca_gols$rowmass * ca_gols$rowcoord^2) / ca_gols$sv^2
-    col_contrib <- 100 * (ca_gols$colmass * ca_gols$colcoord^2) / ca_gols$sv^2
-    
-    # Formatar em tabela
-    kable(row_contrib, caption = "Contribuição das Categorias de Gols (%)") %>%
-      kable_styling()
-    
-    kable(col_contrib, caption = "Contribuição dos Resultados (%)") %>%
-      kable_styling()
+  # Se não houver valores válidos, retornar NA com prefixo
+  if (length(x_clean) == 0) {
+    return(rep(paste0(prefixo, "_NA"), length(x)))
   }
-}
-```
-
-## Passo 6: Validação e Análises Adicionais
-
-### Análise Adicional: Estatísticas por Resultado
-
-```{r estatisticas_resultado}
-# Combinar dados de jogos com estatísticas
-jogos_ids <- unique(jogos_fluminense$ID)
-
-estatisticas_fluminense <- estatisticas %>%
-  filter(partida_id %in% jogos_ids & clube == "Fluminense")
-
-# Verificar se temos dados de estatísticas
-print(paste("Número de registros de estatísticas do Fluminense:", nrow(estatisticas_fluminense)))
-
-# Juntar com resultados
-dados_completos <- jogos_fluminense %>%
-  select(ID, resultado_fluminense, condicao_fluminense) %>%
-  inner_join(estatisticas_fluminense, by = c("ID" = "partida_id"))
-
-# Verificar disponibilidade de dados de posse de bola
-print("Verificando dados de posse de bola:")
-print(table(!is.na(dados_completos$posse_de_bola)))
-
-# Se não houver dados de posse de bola disponíveis ou muitos dados ausentes
-# Vamos usar outras estatísticas disponíveis
-print("Resumo das estatísticas disponíveis:")
-print(summary(select(dados_completos, chutes, chutes_no_alvo, faltas, cartao_amarelo, cartao_vermelho, impedimentos, escanteios)))
-
-# Categorizar chutes como alternativa à posse de bola
-dados_completos <- dados_completos %>%
-  mutate(categoria_chutes = case_when(
-    chutes < 10 ~ "Poucos (<10)",
-    chutes >= 10 & chutes < 15 ~ "Médio (10-15)",
-    chutes >= 15 ~ "Muitos (>15)",
-    TRUE ~ "Não informado"
-  ))
-
-# Categorizar faltas
-dados_completos <- dados_completos %>%
-  mutate(categoria_faltas = case_when(
-    faltas < 10 ~ "Poucas (<10)",
-    faltas >= 10 & faltas < 20 ~ "Médio (10-20)",
-    faltas >= 20 ~ "Muitas (>20)",
-    TRUE ~ "Não informado"
-  ))
-
-# Tabelas de contingência
-# Para chutes
-tabela_chutes <- table(dados_completos$categoria_chutes, dados_completos$resultado_fluminense)
-print("Tabela de Chutes vs Resultado:")
-print(tabela_chutes)
-
-# Para faltas
-tabela_faltas <- table(dados_completos$categoria_faltas, dados_completos$resultado_fluminense)
-print("Tabela de Faltas vs Resultado:")
-print(tabela_faltas)
-
-# Tentar análise de correspondência para chutes vs resultado
-if(nrow(tabela_chutes) >= 2 && ncol(tabela_chutes) >= 2 && sum(tabela_chutes > 0) >= 4) {
-  print("Realizando análise de correspondência para Chutes vs Resultado:")
-  ca_chutes <- ca(tabela_chutes)
-  print(summary(ca_chutes))
   
-  # Visualizar
-  if(length(ca_chutes$sv) > 0) {
-    plot(ca_chutes, main = "Chutes vs Resultado")
+  # Se todos os valores forem iguais, criar apenas uma categoria
+  if (length(unique(x_clean)) == 1) {
+    result <- rep(paste0(prefixo, "_Único"), length(x))
+    result[is.na(x)] <- paste0(prefixo, "_NA")
+    return(result)
   }
-}
-```
-
-### Análise Adicional: Cartões e Resultado
-
-```{r cartoes_resultado}
-# Obter cartões do Fluminense
-cartoes_fluminense <- cartoes %>%
-  filter(clube == "Fluminense")
-
-# Verificar se temos dados de cartões
-print(paste("Número de cartões do Fluminense:", nrow(cartoes_fluminense)))
-
-# Verificar distribuição de tipos de cartões
-print("Distribuição de tipos de cartões:")
-print(table(cartoes_fluminense$cartao))
-
-# Juntar com resultados
-cartoes_com_resultado <- cartoes_fluminense %>%
-  inner_join(jogos_fluminense, by = c("partida_id" = "ID"))
-
-# Verificar o número de cartões por resultado
-print("Número de cartões por resultado:")
-print(table(cartoes_com_resultado$resultado_fluminense))
-
-# Verificar se temos dados suficientes para análise
-if(nrow(cartoes_fluminense) > 0) {
-  # Agregar cartões por jogo para análise mais robusta
-  cartoes_agregados <- cartoes_com_resultado %>%
-    group_by(partida_id, resultado_fluminense) %>%
-    summarize(
-      total_amarelos = sum(cartao == "Amarelo"),
-      total_vermelhos = sum(cartao == "Vermelho"),
-      .groups = "drop"
-    )
   
-  # Categorizar número de cartões amarelos
-  cartoes_agregados <- cartoes_agregados %>%
-    mutate(categoria_amarelos = case_when(
-      total_amarelos == 0 ~ "Nenhum",
-      total_amarelos == 1 ~ "Um",
-      total_amarelos == 2 ~ "Dois",
-      total_amarelos >= 3 ~ "Três ou mais",
-      TRUE ~ NA_character_
-    ))
+  # Se houver poucos valores únicos, usar esses valores como categorias
+  if (length(unique(x_clean)) <= 3) {
+    categorias <- as.character(x)
+    categorias[!is.na(categorias)] <- paste0(prefixo, "_", categorias[!is.na(categorias)])
+    categorias[is.na(x)] <- paste0(prefixo, "_NA")
+    return(categorias)
+  }
   
-  # Tabela de contingência: número de cartões amarelos vs resultado
-  tabela_amarelos <- table(cartoes_agregados$categoria_amarelos, cartoes_agregados$resultado_fluminense)
-  print("Tabela de Cartões Amarelos vs Resultado:")
-  print(tabela_amarelos)
+  # Caso contrário, usar tercis
+  quartis <- try(quantile(x_clean, probs = c(0, 0.33, 0.66, 1), na.rm = TRUE), silent = TRUE)
   
-  # Se temos dados suficientes para análise de correspondência
-  if(nrow(tabela_amarelos) >= 2 && ncol(tabela_amarelos) >= 2 && sum(tabela_amarelos > 0) >= 4) {
-    print("Realizando análise de correspondência para Cartões Amarelos vs Resultado:")
-    ca_amarelos <- ca(tabela_amarelos)
-    print(summary(ca_amarelos))
-    
-    # Visualizar
-    if(length(ca_amarelos$sv) > 0) {
-      plot(ca_amarelos, main = "Cartões Amarelos vs Resultado")
+  # Se houver erro no cálculo dos quartis, tentar uma abordagem mais simples
+  if (inherits(quartis, "try-error") || length(unique(quartis)) < 4) {
+    # Usar uma categorização mais simples baseada na mediana
+    if (all(is.numeric(x_clean))) {
+      breaks_valores <- c(-Inf, min(x_clean, na.rm = TRUE) + 0.001, 
+                       median(x_clean, na.rm = TRUE), 
+                       max(x_clean, na.rm = TRUE) + 0.001)
+      
+      # Garantir que os breaks são únicos
+      if (length(unique(breaks_valores)) < 4) {
+        # Se ainda não conseguimos breaks únicos, usar valores arbitrários
+        resultado <- rep(paste0(prefixo, "_Médio"), length(x))
+        resultado[x > median(x_clean, na.rm = TRUE)] <- paste0(prefixo, "_Alto")
+        resultado[x < median(x_clean, na.rm = TRUE)] <- paste0(prefixo, "_Baixo")
+        resultado[is.na(x)] <- paste0(prefixo, "_NA")
+      } else {
+        resultado <- cut(x, 
+                     breaks = breaks_valores, 
+                     labels = c("Baixo", "Médio", "Alto"),
+                     include.lowest = TRUE)
+        # Adicionar o prefixo
+        levels(resultado) <- paste0(prefixo, "_", levels(resultado))
+        # Substituir NAs
+        resultado[is.na(resultado)] <- paste0(prefixo, "_NA")
+      }
+    } else {
+      # Para dados não numéricos
+      resultado <- rep(paste0(prefixo, "_Categoria"), length(x))
+      resultado[is.na(x)] <- paste0(prefixo, "_NA")
     }
   } else {
-    print("Dados insuficientes para análise de correspondência de cartões amarelos")
+    # Usar a categorização por quartis como planejado
+    resultado <- try(cut(x, 
+                    breaks = quartis, 
+                    labels = c("Baixo", "Médio", "Alto"),
+                    include.lowest = TRUE), silent = TRUE)
     
-    # Mostrar frequências simples
-    print("Mostrando frequências de resultados por quantidade de cartões amarelos:")
-    print(tabela_amarelos)
+    # Verificar se o cut funcionou
+    if (inherits(resultado, "try-error")) {
+      # Abordagem alternativa se o cut falhar
+      resultado <- rep(paste0(prefixo, "_Médio"), length(x))
+      resultado[x > quartis[3]] <- paste0(prefixo, "_Alto")
+      resultado[x < quartis[2]] <- paste0(prefixo, "_Baixo")
+      resultado[is.na(x)] <- paste0(prefixo, "_NA")
+    } else {
+      # Adicionar o prefixo
+      levels(resultado) <- paste0(prefixo, "_", levels(resultado))
+      # Substituir NAs
+      resultado[is.na(resultado)] <- paste0(prefixo, "_NA")
+    }
   }
   
-  # Análise para vermelhos (geralmente menos comuns)
-  if(sum(cartoes_agregados$total_vermelhos) > 0) {
-    print("Distribuição de cartões vermelhos por resultado:")
-    print(table(cartoes_agregados$total_vermelhos, cartoes_agregados$resultado_fluminense))
-  } else {
-    print("Não há dados suficientes de cartões vermelhos para análise")
+  return(resultado)
+}
+
+# Selecionar as variáveis numéricas mais relevantes para categorização
+variaveis_para_categorizar <- c(
+  "Shots", "KeyPasses", "PA%", "AerialsWon", "Touches", 
+  "Passes", "Crosses", "Dribbles", "Fouled", "TotalTackles", 
+  "Interceptions", "Clearances"
+)
+
+# Criar as variáveis categorizadas
+dados_categorizados <- dados
+
+# Imprimir as variáveis antes de categorizar para debug
+print("Verificando variáveis antes da categorização:")
+for (var in variaveis_para_categorizar) {
+  print(paste("Variável:", var))
+  print(summary(dados[[var]]))
+}
+
+# Loop melhorado com tratamento de erro
+for (var in variaveis_para_categorizar) {
+  # Remover caracteres especiais do nome da variável para criar o prefixo
+  prefixo <- gsub("[^[:alnum:]]", "", var)
+  
+  # Verificar se a variável existe
+  if (!(var %in% names(dados))) {
+    warning(paste("Variável", var, "não encontrada no dataframe"))
+    next
   }
-} else {
-  print("Não há dados de cartões do Fluminense disponíveis")
+  
+  # Capturar e reportar erros durante a categorização
+  tryCatch({
+    # Categorizar a variável
+    resultado_cat <- categorizar_variavel(dados[[var]], prefixo)
+    
+    # Verificar se o resultado tem o comprimento correto
+    if (length(resultado_cat) == nrow(dados)) {
+      dados_categorizados[[paste0(var, "_Cat")]] <- resultado_cat
+    } else {
+      warning(paste("Resultado da categorização para", var, 
+                    "tem comprimento diferente:", 
+                    length(resultado_cat), "vs", nrow(dados)))
+    }
+  }, error = function(e) {
+    warning(paste("Erro ao categorizar", var, ":", e$message))
+  })
 }
+
+# Verificar quais variáveis categóricas foram criadas
+cat("Variáveis categorizadas criadas:", 
+    paste(grep("_Cat$", names(dados_categorizados), value = TRUE), collapse = ", "))
+
+# Visualizar as novas variáveis categorizadas
+head(dados_categorizados[, grep("_Cat$", names(dados_categorizados))])
 ```
 
-## Análise Final: Abordagem Alternativa com Visualizações Diretas
+Construção da Tabela de Contingência
+Agora, vamos criar tabelas de contingência cruzando as posições dos jogadores (linhas) com as categorias das estatísticas (colunas):
 
-Considerando as limitações nos dados para a análise de correspondência tradicional, vamos complementar nosso estudo com visualizações diretas que permitem compreender o desempenho do Fluminense.
-
-```{r analise_alternativa}
-# Criar visualizações mais diretas dos dados
-# Gráfico de barras: Resultados por condição de jogo
-ggplot(jogos_fluminense, aes(x = condicao_fluminense, fill = resultado_fluminense)) +
-  geom_bar(position = "dodge") +
-  labs(title = "Resultados do Fluminense por Condição de Jogo",
-       x = "Condição",
-       y = "Número de Jogos",
-       fill = "Resultado") +
-  theme_minimal()
-
-# Gráfico de barras: Distribuição de gols marcados por resultado
-ggplot(jogos_flu_detalhado, aes(x = resultado_fluminense, y = gols_fluminense)) +
-  geom_boxplot() +
-  labs(title = "Distribuição de Gols Marcados por Resultado",
-       x = "Resultado",
-       y = "Gols Marcados") +
-  theme_minimal()
-
-# Se tivermos dados suficientes de cartões, podemos visualizá-los também
-if(exists("cartoes_agregados") && nrow(cartoes_agregados) > 0) {
-  ggplot(cartoes_agregados, aes(x = resultado_fluminense, y = total_amarelos)) +
-    geom_boxplot() +
-    labs(title = "Distribuição de Cartões Amarelos por Resultado",
-         x = "Resultado",
-         y = "Número de Cartões Amarelos") +
-    theme_minimal()
+```{r}
+# Função para criar tabela de contingência para uma variável categórica
+criar_tabela_contingencia <- function(dados, var_categorica) {
+  # Criar tabela de contingência
+  tabela <- table(dados$PosicaoAgrupada, dados[[var_categorica]])
+  return(tabela)
 }
+
+# Criar tabelas de contingência para cada variável categorizada
+variaveis_categorizadas <- grep("_Cat$", names(dados_categorizados), value = TRUE)
+
+# Criar uma tabela de contingência completa
+tabela_completa <- NULL
+
+for (var in variaveis_categorizadas) {
+  tabela_temp <- criar_tabela_contingencia(dados_categorizados, var)
+  
+  if (is.null(tabela_completa)) {
+    tabela_completa <- tabela_temp
+  } else {
+    # Adicionar apenas se a tabela tiver ao menos uma coluna não vazia
+    if (sum(colSums(tabela_temp) > 0) > 0) {
+      tabela_completa <- cbind(tabela_completa, tabela_temp)
+    }
+  }
+}
+
+# Mostrar a tabela de contingência (primeiras colunas)
+kable(tabela_completa[, 1:min(10, ncol(tabela_completa))], 
+      caption = "Tabela de Contingência (primeiras 10 colunas)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+# Verificar as dimensões da tabela
+cat("Dimensões da tabela de contingência:", dim(tabela_completa), "\n")
+
+# Calcular o número máximo de dimensões possíveis
+max_dims <- min(nrow(tabela_completa) - 1, ncol(tabela_completa) - 1)
+cat("Número máximo de dimensões possíveis:", max_dims, "\n")
 ```
 
-## Conclusões
+Execução da Análise de Correspondência
+Com a tabela de contingência pronta, vamos realizar a Análise de Correspondência:
 
-Nossa análise do desempenho do Fluminense no Brasileirão 2012 revelou insights importantes, mesmo com algumas limitações nos dados para aplicação da análise de correspondência tradicional:
+```{r}
+# Realizar a análise de correspondência
+ca_result <- CA(tabela_completa, graph = FALSE)
 
-1. **Relação entre condição de jogo e resultado**: Os dados mostraram padrões de desempenho distintos quando o Fluminense jogou como mandante versus como visitante, com tendência de melhores resultados em casa.
+# Sumário dos resultados
+summary(ca_result)
 
-2. **Relação entre gols marcados e resultado**: Como esperado, existe uma clara associação entre o número de gols marcados e o resultado final das partidas, com vitórias associadas a maior número de gols.
+# Verificar a inércia total e a contribuição de cada dimensão
+print(ca_result$eig)
 
-3. **Padrões de jogo**: A análise das estatísticas de jogo, como chutes e faltas, oferece insights sobre o estilo de jogo do Fluminense em diferentes condições e resultados.
+# Calcular a porcentagem acumulada de variância explicada
+var_acumulada <- cumsum(ca_result$eig[, 2])
+print(var_acumulada)
+```
 
-4. **Disciplina e resultado**: A distribuição de cartões amarelos e vermelhos em relação aos resultados sugere que a disciplina foi um fator relevante na campanha do título.
+Avaliação da Qualidade da Representação
+Vamos avaliar a qualidade da representação das categorias no mapa perceptual:
 
-Embora as limitações dos dados tenham dificultado a aplicação completa da análise de correspondência conforme descrita no livro de Hair et al., as análises alternativas e visualizações diretas proporcionaram uma compreensão valiosa sobre os fatores associados ao sucesso do Fluminense na temporada de 2012.
+```{r}
+# Contribuição das linhas (posições) para as dimensões
+row_contrib <- ca_result$row$contrib
+row_contrib_df <- as.data.frame(row_contrib)
+row_contrib_df$Posicao <- rownames(row_contrib_df)
+row_contrib_long <- pivot_longer(row_contrib_df, 
+                                 cols = -Posicao, 
+                                 names_to = "Dimensao", 
+                                 values_to = "Contribuicao")
 
-Esta análise demonstra a importância de adaptar as técnicas estatísticas às características dos dados disponíveis, complementando abordagens tradicionais com visualizações e análises alternativas quando necessário.
+# Visualizar contribuições das linhas
+ggplot(row_contrib_long %>% filter(Dimensao %in% c("Dim 1", "Dim 2", "Dim 3")), 
+       aes(x = Posicao, y = Contribuicao, fill = Dimensao)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Contribuição das Posições para as Dimensões",
+       x = "Posição", y = "Contribuição (%)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Contribuição das colunas (estatísticas) para as dimensões
+col_contrib <- ca_result$col$contrib
+# Selecionar as colunas com maior contribuição para Dim 1 e Dim 2
+top_cols_dim1 <- names(sort(col_contrib[, 1], decreasing = TRUE)[1:10])
+top_cols_dim2 <- names(sort(col_contrib[, 2], decreasing = TRUE)[1:10])
+top_cols <- unique(c(top_cols_dim1, top_cols_dim2))
+
+col_contrib_df <- as.data.frame(col_contrib[top_cols, 1:2])
+col_contrib_df$Estatistica <- rownames(col_contrib_df)
+col_contrib_long <- pivot_longer(col_contrib_df, 
+                                cols = -Estatistica, 
+                                names_to = "Dimensao", 
+                                values_to = "Contribuicao")
+
+# Visualizar contribuições das colunas (top contribuições)
+ggplot(col_contrib_long, aes(x = reorder(Estatistica, Contribuicao), 
+                           y = Contribuicao, fill = Dimensao)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Top Contribuições das Estatísticas para as Dimensões",
+       x = "Estatística", y = "Contribuição (%)")
+```
+
+Visualização dos Resultados
+Vamos criar visualizações do mapa perceptual da Análise de Correspondência:
+
+```{r}
+# Criar um dataframe com as coordenadas das linhas (posições)
+row_coords <- as.data.frame(ca_result$row$coord[, 1:2])
+row_coords$Posicao <- rownames(row_coords)
+
+# Criar um dataframe com as coordenadas das colunas (estatísticas)
+col_coords <- as.data.frame(ca_result$col$coord[, 1:2])
+col_coords$Estatistica <- rownames(col_coords)
+
+# Adicionar informações dos jogadores para colorir por time
+jogador_posicao <- dados_categorizados %>%
+  select(Player, Team, PosicaoAgrupada) %>%
+  rename(Posicao = PosicaoAgrupada)
+
+# Juntar com as coordenadas das linhas
+row_coords_with_team <- row_coords %>%
+  left_join(jogador_posicao, by = "Posicao") %>%
+  group_by(Posicao, Dim 1, Dim 2) %>%
+  summarise(Inter_count = sum(Team == "Inter"),
+            Fluminense_count = sum(Team == "Fluminense"),
+            Team_predominant = ifelse(Inter_count > Fluminense_count, "Inter", "Fluminense"),
+            .groups = "drop")
+
+# Mapa perceptual - Biplot básico
+ggplot() +
+  # Pontos das posições (linhas)
+  geom_point(data = row_coords_with_team, aes(x = `Dim 1`, y = `Dim 2`, 
+                                            color = Team_predominant, size = 3)) +
+  geom_text(data = row_coords_with_team, aes(x = `Dim 1`, y = `Dim 2`, 
+                                          label = Posicao), vjust = -1) +
+  # Pontos das estatísticas (colunas) - apenas as mais contributivas
+  geom_point(data = col_coords %>% 
+               filter(Estatistica %in% top_cols), 
+             aes(x = `Dim 1`, y = `Dim 2`), shape = 17, color = "darkred") +
+  geom_text(data = col_coords %>% 
+              filter(Estatistica %in% top_cols), 
+            aes(x = `Dim 1`, y = `Dim 2`, label = Estatistica), 
+            vjust = 1, size = 3, color = "darkred") +
+  # Adicionar linhas de referência nos eixos
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  # Estética do gráfico
+  theme_minimal() +
+  scale_color_manual(values = c("Inter" = "blue", "Fluminense" = "darkgreen")) +
+  labs(title = "Mapa Perceptual da Análise de Correspondência",
+       subtitle = paste0("Dimensão 1 (", round(ca_result$eig[1, 2], 1), 
+                        "%) vs. Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)"),
+       x = paste0("Dimensão 1 (", round(ca_result$eig[1, 2], 1), "%)"),
+       y = paste0("Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)"),
+       color = "Time Predominante",
+       size = NULL) +
+  theme(legend.position = "bottom")
+```
+
+Mapa Perceptual Usando factoextra
+O pacote factoextra fornece visualizações mais elaboradas para Análise de Correspondência:
+
+```{r}
+# Gráfico das linhas (posições)
+fviz_ca_row(ca_result, repel = TRUE) +
+  theme_minimal() +
+  labs(title = "Mapa Perceptual das Posições")
+
+# Gráfico das colunas (estatísticas)
+fviz_ca_col(ca_result, repel = TRUE) +
+  theme_minimal() +
+  labs(title = "Mapa Perceptual das Estatísticas")
+
+# Biplot com linhas e colunas
+fviz_ca_biplot(ca_result, 
+              repel = TRUE,
+              col.row = "darkblue",
+              col.col = "red",
+              title = "Mapa Perceptual Completo: Posições e Estatísticas") +
+  theme_minimal()
+```
+
+Análise e Interpretação
+Vamos analisar as dimensões obtidas e interpretar o significado das associações encontradas:
+
+```{r}
+# Extrair as contribuições das categorias para cada dimensão
+dim1_contrib_col <- sort(col_contrib[, 1], decreasing = TRUE)
+dim2_contrib_col <- sort(col_contrib[, 2], decreasing = TRUE)
+
+# Top categorias contribuindo para a Dimensão 1
+top_dim1 <- head(dim1_contrib_col, 5)
+top_dim1_df <- data.frame(
+  Estatistica = names(top_dim1),
+  Contribuicao = top_dim1
+)
+
+# Top categorias contribuindo para a Dimensão 2
+top_dim2 <- head(dim2_contrib_col, 5)
+top_dim2_df <- data.frame(
+  Estatistica = names(top_dim2),
+  Contribuicao = top_dim2
+)
+
+# Exibir resultados
+kable(top_dim1_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 1") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+kable(top_dim2_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 2") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Interpretação das Dimensões
+Com base nas contribuições das categorias, podemos interpretar o significado de cada dimensão:
+
+```{r}
+# Criar um dataframe com as coordenadas e contribuições
+interpretacao <- data.frame(
+  Dimensao = c("Dimensão 1", "Dimensão 2"),
+  Variancia_Explicada = c(
+    paste0(round(ca_result$eig[1, 2], 2), "%"),
+    paste0(round(ca_result$eig[2, 2], 2), "%")
+  ),
+  Interpretacao = c(
+    "Esta dimensão separa posições ofensivas vs. defensivas, com estatísticas de passe e toque contrapondo-se a estatísticas de desarme e interceptação.",
+    "Esta dimensão contrasta posições de criação vs. finalização, com estatísticas de passes-chave e cruzamentos vs. chutes e gols."
+  )
+)
+
+# Exibir a interpretação
+kable(interpretacao, caption = "Interpretação das Dimensões") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
 

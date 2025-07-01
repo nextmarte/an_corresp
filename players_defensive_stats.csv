@@ -1,0 +1,32 @@
+Player,Age,Position,TotalTackles,Interceptions,Clearances,BlockedShots,Fouls,Rating,Team
+Yann Sommer,36,GK,0,0,0,0,0,5.22,Inter
+Matteo Darmian,35,DC,2,1,0,0,3,6.24,Inter
+Alessandro Bastoni,26,DC,0,1,0,1,2,6.03,Inter
+Stefan de Vrij,33,DC,4,2,4,0,0,6.87,Inter
+Denzel Dumfries,29,DMR,0,0,0,0,2,5.78,Inter
+Federico Dimarco,27,DML,0,0,0,0,3,6.58,Inter
+Kristjan Asllani,23,MC,1,0,0,0,1,6.04,Inter
+Henrikh Mkhitaryan,36,MC,1,0,1,0,0,6.16,Inter
+Nicolò Barella,28,MC,1,1,0,0,1,6.39,Inter
+Lautaro Martínez,27,FW,0,1,0,0,1,6.83,Inter
+Marcus Thuram,27,FW,1,0,1,0,1,6.27,Inter
+Valentín Carboni,20,Sub,0,0,0,0,0,6.33,Inter
+Carlos Augusto,26,Sub,0,0,1,0,0,6.31,Inter
+Luis Henrique,23,Sub,0,0,1,0,0,5.97,Inter
+Petar Sucic,21,Sub,2,0,0,0,1,6.33,Inter
+Sebastiano Esposito,22,Sub,1,0,0,0,0,6.43,Inter
+Fábio,44,GK,0,0,3,0,0,7.61,Fluminense
+Juan Pablo Freytes,25,DC,1,0,7,1,4,6.94,Fluminense
+Thiago Silva,40,DC,3,1,7,0,0,7.39,Fluminense
+Ignácio,28,DC,6,3,8,0,3,7.89,Fluminense
+Samuel Xavier,35,MR,0,0,4,0,0,6.49,Fluminense
+Martinelli,23,MC,0,0,1,0,1,6.41,Fluminense
+Facundo Bernal,21,MC,3,3,2,0,1,7.10,Fluminense
+Renê,32,ML,1,1,6,0,2,7.00,Fluminense
+Nonato,27,AMC,0,1,0,0,2,6.17,Fluminense
+Germán Cano,37,FW,1,0,1,0,0,7.16,Fluminense
+Jhon Arias,27,FW,1,0,0,1,1,7.84,Fluminense
+Everaldo,33,Sub,1,1,0,0,0,6.38,Fluminense
+Thiago Santos,35,Sub,1,1,0,0,2,6.15,Fluminense
+Lima,29,Sub,0,0,1,0,0,6.09,Fluminense
+Hércules,24,Sub,0,0,1,0,0,7.17,Fluminense

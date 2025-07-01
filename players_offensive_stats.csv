@@ -1,0 +1,32 @@
+Player,Age,Position,Shots,ShotsOT,KeyPasses,Dribbles,Fouled,Offsides,Dispossessed,UnsuccessfulTouches,Rating,Team
+Yann Sommer,36,GK,0,0,0,0,0,0,0,0,5.22,Inter
+Matteo Darmian,35,DC,0,0,0,0,2,0,1,0,6.24,Inter
+Alessandro Bastoni,26,DC,0,0,0,0,0,0,0,0,6.03,Inter
+Stefan de Vrij,33,DC,2,0,0,1,0,0,0,0,6.87,Inter
+Denzel Dumfries,29,DMR,1,0,0,0,0,0,0,1,5.78,Inter
+Federico Dimarco,27,DML,5,2,2,0,0,0,0,1,6.58,Inter
+Kristjan Asllani,23,MC,0,0,0,0,1,0,0,0,6.04,Inter
+Henrikh Mkhitaryan,36,MC,0,0,1,0,1,0,1,0,6.16,Inter
+Nicolò Barella,28,MC,0,0,1,1,3,0,1,0,6.39,Inter
+Lautaro Martínez,27,FW,4,2,2,0,3,1,2,2,6.83,Inter
+Marcus Thuram,27,FW,1,0,1,1,1,1,1,3,6.27,Inter
+Valentín Carboni,20,Sub,0,0,1,2,3,0,2,1,6.33,Inter
+Carlos Augusto,26,Sub,1,0,1,0,1,0,0,0,6.31,Inter
+Luis Henrique,23,Sub,1,0,1,0,0,0,0,0,5.97,Inter
+Petar Sucic,21,Sub,0,0,0,1,0,0,0,1,6.33,Inter
+Sebastiano Esposito,22,Sub,1,0,1,0,0,1,0,0,6.43,Inter
+Fábio,44,GK,0,0,0,0,0,0,0,0,7.61,Fluminense
+Juan Pablo Freytes,25,DC,0,0,0,1,1,0,0,1,6.94,Fluminense
+Thiago Silva,40,DC,0,0,1,0,0,0,0,0,7.39,Fluminense
+Ignácio,28,DC,0,0,0,0,0,1,0,1,7.89,Fluminense
+Samuel Xavier,35,MR,1,0,0,0,1,0,0,1,6.49,Fluminense
+Martinelli,23,MC,0,0,0,0,1,0,0,0,6.41,Fluminense
+Facundo Bernal,21,MC,1,0,0,0,1,0,0,0,7.10,Fluminense
+Renê,32,ML,0,0,1,0,1,0,0,2,7.00,Fluminense
+Nonato,27,AMC,0,0,0,0,1,1,0,2,6.17,Fluminense
+Germán Cano,37,FW,3,1,1,0,3,0,1,1,7.16,Fluminense
+Jhon Arias,27,FW,4,2,4,3,3,0,2,3,7.84,Fluminense
+Everaldo,33,Sub,0,0,0,0,0,0,0,0,6.38,Fluminense
+Thiago Santos,35,Sub,0,0,0,0,0,0,1,2,6.15,Fluminense
+Lima,29,Sub,1,0,0,0,2,1,0,0,6.09,Fluminense
+Hércules,24,Sub,1,1,0,0,0,0,0,1,7.17,Fluminense
