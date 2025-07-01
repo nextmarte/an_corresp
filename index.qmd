@@ -14,12 +14,11 @@ format:
     fig-height: 8
 lang: pt
 ---
-
 ## Introdução
 
 Este documento apresenta uma Análise de Correspondência (CA) aplicada às estatísticas de jogadores do Fluminense e Inter de Milão. A técnica de CA é particularmente útil para analisar dados categóricos e explorar relações entre variáveis qualitativas.
 
-A análise se baseia nas estatísticas de desempenho dos jogadores, categorizadas de acordo com sua posição em campo e seu time. O objetivo é identificar padrões de associação entre as posições específicas de cada time e suas características de desempenho, representadas por variáveis categóricas derivadas das estatísticas originais.
+A análise se baseia nas estatísticas de desempenho dos jogadores, categorizadas de acordo com sua posição em campo e seu time. Os dados foram obtidos do site especializado [WhoScored](https://www.whoscored.com/), que fornece estatísticas detalhadas sobre partidas e desempenho de jogadores em diversas competições ao redor do mundo. O objetivo é identificar padrões de associação entre as posições específicas de cada time e suas características de desempenho, representadas por variáveis categóricas derivadas das estatísticas originais.
 
 ## Carregamento e Preparação dos Dados
 
@@ -92,7 +91,23 @@ kable(distribuicao_posicoes,
 ```
 
 # Conversão de Estatísticas Numéricas em Variáveis Categóricas
-Vamos converter as estatísticas numéricas em variáveis categóricas, utilizando uma abordagem mais refinada que considera a distribuição dos dados e a natureza das estatísticas de futebol:
+
+Em estatísticas de futebol, os dados numéricos frequentemente apresentam distribuições assimétricas e não-normais, com algumas características particulares:
+
+1. **Distribuições assimétricas**: Muitas estatísticas têm valores extremos para certos jogadores, enquanto a maioria possui valores mais baixos
+2. **Alta frequência de zeros**: Estatísticas específicas (como chutes a gol) são naturalmente zero para certas posições (como goleiros)
+3. **Diferenças por posição**: As estatísticas variam significativamente dependendo da função do jogador em campo
+
+Para lidar com essas particularidades e criar uma categorização mais informativa para a Análise de Correspondência, implementamos uma abordagem refinada que vai além da simples categorização binária baseada na mediana.
+
+Nossa estratégia aprimorada:
+
+1. **Tratamento especial para zeros**: Para variáveis com alta proporção de zeros (≥30%), criamos uma categoria específica "Nenhum" e aplicamos a categorização apenas aos valores positivos
+2. **Categorização por tercis**: Utilizamos três níveis ("Baixo", "Médio", "Alto") baseados nos percentis 33% e 67%
+3. **Adaptação a diferentes tipos de distribuição**: A função detecta automaticamente o tipo de distribuição e aplica a estratégia mais adequada
+4. **Tratamento para casos especiais**: Categorias específicas para conjuntos com poucos valores únicos ou valores ausentes
+
+
 
 ```{r}
 # Função aprimorada para categorizar variáveis numéricas
