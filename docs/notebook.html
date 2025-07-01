@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Análise de Correspondência - Consolidação de Estatísticas de Futebol – Analise de correspondencia</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ddd961a2510921635943dfbbd19534c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Analise de correspondencia</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#objetivos" id="toc-objetivos" class="nav-link active" data-scroll-target="#objetivos">Objetivos:</a></li>
+  <li><a href="#carregamento-e-análise-dos-dados" id="toc-carregamento-e-análise-dos-dados" class="nav-link" data-scroll-target="#carregamento-e-análise-dos-dados">1. Carregamento e Análise dos Dados</a></li>
+  <li><a href="#identificação-de-colunas-duplicadas" id="toc-identificação-de-colunas-duplicadas" class="nav-link" data-scroll-target="#identificação-de-colunas-duplicadas">2. Identificação de Colunas Duplicadas</a></li>
+  <li><a href="#consolidação-da-tabela-de-jogadores" id="toc-consolidação-da-tabela-de-jogadores" class="nav-link" data-scroll-target="#consolidação-da-tabela-de-jogadores">3. Consolidação da Tabela de Jogadores</a></li>
+  <li><a href="#agregação-por-time" id="toc-agregação-por-time" class="nav-link" data-scroll-target="#agregação-por-time">4. Agregação por Time</a></li>
+  <li><a href="#criação-da-tabela-fato-para-análise-de-correspondência" id="toc-criação-da-tabela-fato-para-análise-de-correspondência" class="nav-link" data-scroll-target="#criação-da-tabela-fato-para-análise-de-correspondência">5. Criação da Tabela Fato para Análise de Correspondência</a></li>
+  <li><a href="#visualizações-exploratórias" id="toc-visualizações-exploratórias" class="nav-link" data-scroll-target="#visualizações-exploratórias">6. Visualizações Exploratórias</a></li>
+  <li><a href="#análise-comparativa-entre-times" id="toc-análise-comparativa-entre-times" class="nav-link" data-scroll-target="#análise-comparativa-entre-times">7. Análise Comparativa entre Times</a></li>
+  <li><a href="#resumo-e-arquivos-gerados" id="toc-resumo-e-arquivos-gerados" class="nav-link" data-scroll-target="#resumo-e-arquivos-gerados">8. Resumo e Arquivos Gerados</a></li>
+  <li><a href="#conclusão" id="toc-conclusão" class="nav-link" data-scroll-target="#conclusão">Conclusão</a>
+  <ul class="collapse">
+  <li><a href="#arquivos-gerados" id="toc-arquivos-gerados" class="nav-link" data-scroll-target="#arquivos-gerados">Arquivos Gerados:</a></li>
+  <li><a href="#para-análise-de-correspondência" id="toc-para-análise-de-correspondência" class="nav-link" data-scroll-target="#para-análise-de-correspondência">Para Análise de Correspondência:</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Análise de Correspondência - Consolidação de Estatísticas de Futebol</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Este notebook consolida todas as estatísticas de jogadores e times para preparar dados para análise de correspondência.</p>
+<section id="objetivos" class="level2">
+<h2 class="anchored" data-anchor-id="objetivos">Objetivos:</h2>
+<ol type="1">
+<li>Consolidar estatísticas por jogador (removendo duplicatas)</li>
+<li>Agregar estatísticas por time</li>
+<li>Criar tabela fato para análise de correspondência</li>
+<li>Exportar todas as tabelas como CSV</li>
+</ol>
+<div id="289bff44" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Configurações de exibição</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="va">None</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.width'</span>, <span class="va">None</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_rows'</span>, <span class="dv">20</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Bibliotecas carregadas com sucesso!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bibliotecas carregadas com sucesso!</code></pre>
+</div>
+</div>
+</section>
+<section id="carregamento-e-análise-dos-dados" class="level2">
+<h2 class="anchored" data-anchor-id="carregamento-e-análise-dos-dados">1. Carregamento e Análise dos Dados</h2>
+<p>Primeiro vamos carregar todas as tabelas e analisar sua estrutura.</p>
+<div id="48f2379c" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Carregando todos os datasets</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sumario <span class="op">=</span> pd.read_csv(<span class="st">'sumario_jogo.csv'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>passing <span class="op">=</span> pd.read_csv(<span class="st">'players_passing_stats.csv'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>offensive <span class="op">=</span> pd.read_csv(<span class="st">'players_offensive_stats.csv'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>defensive <span class="op">=</span> pd.read_csv(<span class="st">'players_defensive_stats.csv'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Informações básicas dos datasets</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>datasets <span class="op">=</span> {</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Sumário do Jogo'</span>: sumario,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Estatísticas de Passe'</span>: passing,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Estatísticas Ofensivas'</span>: offensive,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Estatísticas Defensivas'</span>: defensive</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== INFORMAÇÕES DOS DATASETS ==="</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nome, df <span class="kw">in</span> datasets.items():</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>nome<span class="sc">}</span><span class="ss">:"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - Dimensões: </span><span class="sc">{</span>df<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - Jogadores únicos: </span><span class="sc">{</span>df[<span class="st">'Player'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - Times: </span><span class="sc">{</span>df[<span class="st">'Team'</span>]<span class="sc">.</span>unique()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== INFORMAÇÕES DOS DATASETS ===
+
+Sumário do Jogo:
+  - Dimensões: (31, 11)
+  - Jogadores únicos: 31
+  - Times: ['Inter' 'Fluminense']
+
+Estatísticas de Passe:
+  - Dimensões: (31, 14)
+  - Jogadores únicos: 31
+  - Times: ['Inter' 'Fluminense']
+
+Estatísticas Ofensivas:
+  - Dimensões: (31, 13)
+  - Jogadores únicos: 31
+  - Times: ['Inter' 'Fluminense']
+
+Estatísticas Defensivas:
+  - Dimensões: (31, 10)
+  - Jogadores únicos: 31
+  - Times: ['Inter' 'Fluminense']</code></pre>
+</div>
+</div>
+<div id="ac1ca651" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Analisando colunas de cada dataset</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== COLUNAS POR DATASET ==="</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nome, df <span class="kw">in</span> datasets.items():</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>nome<span class="sc">}</span><span class="ss">:"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  Colunas: </span><span class="sc">{</span><span class="bu">list</span>(df.columns)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== COLUNAS POR DATASET ===
+
+Sumário do Jogo:
+  Colunas: ['Player', 'Age', 'Position', 'Shots', 'ShotsOT', 'KeyPasses', 'PA%', 'AerialsWon', 'Touches', 'Rating', 'Team']
+
+Estatísticas de Passe:
+  Colunas: ['Player', 'Age', 'Position', 'KeyPasses', 'Passes', 'PA%', 'Crosses', 'AccCrosses', 'LongBalls', 'AccLongBalls', 'ThroughBalls', 'AccThroughBalls', 'Rating', 'Team']
+
+Estatísticas Ofensivas:
+  Colunas: ['Player', 'Age', 'Position', 'Shots', 'ShotsOT', 'KeyPasses', 'Dribbles', 'Fouled', 'Offsides', 'Dispossessed', 'UnsuccessfulTouches', 'Rating', 'Team']
+
+Estatísticas Defensivas:
+  Colunas: ['Player', 'Age', 'Position', 'TotalTackles', 'Interceptions', 'Clearances', 'BlockedShots', 'Fouls', 'Rating', 'Team']</code></pre>
+</div>
+</div>
+</section>
+<section id="identificação-de-colunas-duplicadas" class="level2">
+<h2 class="anchored" data-anchor-id="identificação-de-colunas-duplicadas">2. Identificação de Colunas Duplicadas</h2>
+<p>Vamos identificar quais colunas aparecem em múltiplos datasets.</p>
+<div id="fa73ac92" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identificando colunas comuns entre datasets</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>all_columns <span class="op">=</span> {}</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nome, df <span class="kw">in</span> datasets.items():</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    all_columns[nome] <span class="op">=</span> <span class="bu">set</span>(df.columns)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Colunas que aparecem em múltiplos datasets</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>colunas_duplicadas <span class="op">=</span> {}</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> sumario.columns:</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    datasets_com_coluna <span class="op">=</span> []</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> nome, colunas <span class="kw">in</span> all_columns.items():</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> col <span class="kw">in</span> colunas:</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>            datasets_com_coluna.append(nome)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(datasets_com_coluna) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        colunas_duplicadas[col] <span class="op">=</span> datasets_com_coluna</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== COLUNAS DUPLICADAS ==="</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col, datasets_list <span class="kw">in</span> colunas_duplicadas.items():</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>datasets_list<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== COLUNAS DUPLICADAS ===
+Player: ['Sumário do Jogo', 'Estatísticas de Passe', 'Estatísticas Ofensivas', 'Estatísticas Defensivas']
+Age: ['Sumário do Jogo', 'Estatísticas de Passe', 'Estatísticas Ofensivas', 'Estatísticas Defensivas']
+Position: ['Sumário do Jogo', 'Estatísticas de Passe', 'Estatísticas Ofensivas', 'Estatísticas Defensivas']
+Shots: ['Sumário do Jogo', 'Estatísticas Ofensivas']
+ShotsOT: ['Sumário do Jogo', 'Estatísticas Ofensivas']
+KeyPasses: ['Sumário do Jogo', 'Estatísticas de Passe', 'Estatísticas Ofensivas']
+PA%: ['Sumário do Jogo', 'Estatísticas de Passe']
+Rating: ['Sumário do Jogo', 'Estatísticas de Passe', 'Estatísticas Ofensivas', 'Estatísticas Defensivas']
+Team: ['Sumário do Jogo', 'Estatísticas de Passe', 'Estatísticas Ofensivas', 'Estatísticas Defensivas']</code></pre>
+</div>
+</div>
+<div id="5a3dd35a" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificando se os valores das colunas duplicadas são consistentes</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== VERIFICAÇÃO DE CONSISTÊNCIA ==="</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificando KeyPasses (aparece em sumario, passing e offensive)</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'KeyPasses'</span> <span class="kw">in</span> colunas_duplicadas:</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Verificando KeyPasses:"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Merge para comparar</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    temp_merge <span class="op">=</span> sumario[[<span class="st">'Player'</span>, <span class="st">'KeyPasses'</span>]].merge(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        passing[[<span class="st">'Player'</span>, <span class="st">'KeyPasses'</span>]], on<span class="op">=</span><span class="st">'Player'</span>, suffixes<span class="op">=</span>(<span class="st">'_sumario'</span>, <span class="st">'_passing'</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    temp_merge <span class="op">=</span> temp_merge.merge(</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        offensive[[<span class="st">'Player'</span>, <span class="st">'KeyPasses'</span>]], on<span class="op">=</span><span class="st">'Player'</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    temp_merge.rename(</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        columns<span class="op">=</span>{<span class="st">'KeyPasses'</span>: <span class="st">'KeyPasses_offensive'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Verificando diferenças</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    diff1 <span class="op">=</span> (temp_merge[<span class="st">'KeyPasses_sumario'</span>] <span class="op">!=</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>             temp_merge[<span class="st">'KeyPasses_passing'</span>]).<span class="bu">sum</span>()</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    diff2 <span class="op">=</span> (temp_merge[<span class="st">'KeyPasses_sumario'</span>] <span class="op">!=</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>             temp_merge[<span class="st">'KeyPasses_offensive'</span>]).<span class="bu">sum</span>()</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  Diferenças sumario vs passing: </span><span class="sc">{</span>diff1<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  Diferenças sumario vs offensive: </span><span class="sc">{</span>diff2<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> diff1 <span class="op">==</span> <span class="dv">0</span> <span class="kw">and</span> diff2 <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"  ✓ KeyPasses é consistente entre todos os datasets"</span>)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"  ⚠ KeyPasses tem diferenças entre datasets"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== VERIFICAÇÃO DE CONSISTÊNCIA ===
+
+Verificando KeyPasses:
+  Diferenças sumario vs passing: 0
+  Diferenças sumario vs offensive: 0
+  ✓ KeyPasses é consistente entre todos os datasets</code></pre>
+</div>
+</div>
+</section>
+<section id="consolidação-da-tabela-de-jogadores" class="level2">
+<h2 class="anchored" data-anchor-id="consolidação-da-tabela-de-jogadores">3. Consolidação da Tabela de Jogadores</h2>
+<p>Vamos consolidar todas as estatísticas em uma única tabela por jogador, removendo duplicatas.</p>
+<div id="e9807ba8" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definindo colunas de identificação que devem ser mantidas apenas uma vez</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>colunas_identificacao <span class="op">=</span> [<span class="st">'Player'</span>, <span class="st">'Age'</span>, <span class="st">'Position'</span>, <span class="st">'Team'</span>, <span class="st">'Rating'</span>]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Começando com o sumário como base</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>estatisticas_jogadores <span class="op">=</span> sumario.copy()</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== PROCESSO DE CONSOLIDAÇÃO ==="</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Base inicial (sumário): </span><span class="sc">{</span>estatisticas_jogadores<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Adicionando colunas únicas de passing</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>colunas_passing_unicas <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> passing.columns</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                          <span class="cf">if</span> col <span class="kw">not</span> <span class="kw">in</span> estatisticas_jogadores.columns <span class="kw">or</span> col <span class="op">==</span> <span class="st">'Player'</span>]</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(colunas_passing_unicas) <span class="op">&gt;</span> <span class="dv">1</span>:  <span class="co"># Mais que apenas 'Player'</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    passing_unicas <span class="op">=</span> passing[colunas_passing_unicas]</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    estatisticas_jogadores <span class="op">=</span> estatisticas_jogadores.merge(</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        passing_unicas, on<span class="op">=</span><span class="st">'Player'</span>, how<span class="op">=</span><span class="st">'left'</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Após adicionar passing: </span><span class="sc">{</span>estatisticas_jogadores<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"Colunas adicionadas de passing: </span><span class="sc">{</span>[col <span class="cf">for</span> col <span class="kw">in</span> colunas_passing_unicas <span class="cf">if</span> col <span class="op">!=</span> <span class="st">'Player'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Adicionando colunas únicas de offensive</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>colunas_offensive_unicas <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> offensive.columns</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">if</span> col <span class="kw">not</span> <span class="kw">in</span> estatisticas_jogadores.columns <span class="kw">or</span> col <span class="op">==</span> <span class="st">'Player'</span>]</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(colunas_offensive_unicas) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    offensive_unicas <span class="op">=</span> offensive[colunas_offensive_unicas]</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    estatisticas_jogadores <span class="op">=</span> estatisticas_jogadores.merge(</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        offensive_unicas, on<span class="op">=</span><span class="st">'Player'</span>, how<span class="op">=</span><span class="st">'left'</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Após adicionar offensive: </span><span class="sc">{</span>estatisticas_jogadores<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"Colunas adicionadas de offensive: </span><span class="sc">{</span>[col <span class="cf">for</span> col <span class="kw">in</span> colunas_offensive_unicas <span class="cf">if</span> col <span class="op">!=</span> <span class="st">'Player'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Adicionando colunas únicas de defensive</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>colunas_defensive_unicas <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> defensive.columns</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">if</span> col <span class="kw">not</span> <span class="kw">in</span> estatisticas_jogadores.columns <span class="kw">or</span> col <span class="op">==</span> <span class="st">'Player'</span>]</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(colunas_defensive_unicas) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>    defensive_unicas <span class="op">=</span> defensive[colunas_defensive_unicas]</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>    estatisticas_jogadores <span class="op">=</span> estatisticas_jogadores.merge(</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>        defensive_unicas, on<span class="op">=</span><span class="st">'Player'</span>, how<span class="op">=</span><span class="st">'left'</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Após adicionar defensive: </span><span class="sc">{</span>estatisticas_jogadores<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"Colunas adicionadas de defensive: </span><span class="sc">{</span>[col <span class="cf">for</span> col <span class="kw">in</span> colunas_defensive_unicas <span class="cf">if</span> col <span class="op">!=</span> <span class="st">'Player'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Tabela consolidada final: </span><span class="sc">{</span>estatisticas_jogadores<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== PROCESSO DE CONSOLIDAÇÃO ===
+Base inicial (sumário): (31, 11)
+Após adicionar passing: (31, 18)
+Colunas adicionadas de passing: ['Passes', 'Crosses', 'AccCrosses', 'LongBalls', 'AccLongBalls', 'ThroughBalls', 'AccThroughBalls']
+Após adicionar offensive: (31, 23)
+Colunas adicionadas de offensive: ['Dribbles', 'Fouled', 'Offsides', 'Dispossessed', 'UnsuccessfulTouches']
+Após adicionar defensive: (31, 28)
+Colunas adicionadas de defensive: ['TotalTackles', 'Interceptions', 'Clearances', 'BlockedShots', 'Fouls']
+
+Tabela consolidada final: (31, 28)</code></pre>
+</div>
+</div>
+<div id="df9934c9" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualizando a tabela consolidada</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== TABELA CONSOLIDADA DE JOGADORES ==="</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Colunas finais (</span><span class="sc">{</span><span class="bu">len</span>(estatisticas_jogadores.columns)<span class="sc">}</span><span class="ss">):"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, col <span class="kw">in</span> <span class="bu">enumerate</span>(estatisticas_jogadores.columns, <span class="dv">1</span>):</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>i<span class="sc">:2d}</span><span class="ss">. </span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Primeiras 3 linhas:"</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(estatisticas_jogadores.head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== TABELA CONSOLIDADA DE JOGADORES ===
+Colunas finais (28):
+ 1. Player
+ 2. Age
+ 3. Position
+ 4. Shots
+ 5. ShotsOT
+ 6. KeyPasses
+ 7. PA%
+ 8. AerialsWon
+ 9. Touches
+10. Rating
+11. Team
+12. Passes
+13. Crosses
+14. AccCrosses
+15. LongBalls
+16. AccLongBalls
+17. ThroughBalls
+18. AccThroughBalls
+19. Dribbles
+20. Fouled
+21. Offsides
+22. Dispossessed
+23. UnsuccessfulTouches
+24. TotalTackles
+25. Interceptions
+26. Clearances
+27. BlockedShots
+28. Fouls
+
+Primeiras 3 linhas:
+               Player  Age Position  Shots  ShotsOT  KeyPasses   PA%  \
+0         Yann Sommer   36       GK      0        0          0  96.4   
+1      Matteo Darmian   35       DC      0        0          0  87.5   
+2  Alessandro Bastoni   26       DC      0        0          0  84.0   
+
+   AerialsWon  Touches  Rating   Team  Passes  Crosses  AccCrosses  LongBalls  \
+0           0       32    5.22  Inter      28        0           0          2   
+1           2       58    6.24  Inter      40        2           1          3   
+2           2       64    6.03  Inter      50        1           0          6   
+
+   AccLongBalls  ThroughBalls  AccThroughBalls  Dribbles  Fouled  Offsides  \
+0             1             0                0         0       0         0   
+1             1             0                0         0       2         0   
+2             3             1                0         0       0         0   
+
+   Dispossessed  UnsuccessfulTouches  TotalTackles  Interceptions  Clearances  \
+0             0                    0             0              0           0   
+1             1                    0             2              1           0   
+2             0                    0             0              1           0   
+
+   BlockedShots  Fouls  
+0             0      0  
+1             0      3  
+2             1      2  </code></pre>
+</div>
+</div>
+<div id="351316e7" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Salvando tabela consolidada de jogadores</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>estatisticas_jogadores.to_csv(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'estatisticas_jogadores_consolidada.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✓ Tabela consolidada de jogadores salva como 'estatisticas_jogadores_consolidada.csv'"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificando valores faltantes</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Valores faltantes por coluna:"</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> estatisticas_jogadores.isnull().<span class="bu">sum</span>()</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> missing_values.<span class="bu">sum</span>() <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(missing_values[missing_values <span class="op">&gt;</span> <span class="dv">0</span>])</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Nenhum valor faltante encontrado!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✓ Tabela consolidada de jogadores salva como 'estatisticas_jogadores_consolidada.csv'
+
+Valores faltantes por coluna:
+Nenhum valor faltante encontrado!</code></pre>
+</div>
+</div>
+</section>
+<section id="agregação-por-time" class="level2">
+<h2 class="anchored" data-anchor-id="agregação-por-time">4. Agregação por Time</h2>
+<p>Agora vamos criar estatísticas agregadas por time.</p>
+<div id="e9c23161" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identificando colunas numéricas para agregação</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>colunas_numericas <span class="op">=</span> estatisticas_jogadores.select_dtypes(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    include<span class="op">=</span>[np.number]).columns.tolist()</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Colunas que precisam de tratamento especial</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>colunas_especiais <span class="op">=</span> {</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Age'</span>: <span class="st">'mean'</span>,        <span class="co"># Idade média</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Rating'</span>: <span class="st">'mean'</span>,     <span class="co"># Rating médio</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'PA%'</span>: <span class="st">'mean'</span>         <span class="co"># Porcentagem de passes média</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Colunas para somar (estatísticas de jogo)</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>colunas_soma <span class="op">=</span> [</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    col <span class="cf">for</span> col <span class="kw">in</span> colunas_numericas <span class="cf">if</span> col <span class="kw">not</span> <span class="kw">in</span> colunas_especiais.keys()]</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== ESTRATÉGIA DE AGREGAÇÃO ==="</span>)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Colunas para média: </span><span class="sc">{</span><span class="bu">list</span>(colunas_especiais.keys())<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Colunas para soma: </span><span class="sc">{</span>colunas_soma<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== ESTRATÉGIA DE AGREGAÇÃO ===
+Colunas para média: ['Age', 'Rating', 'PA%']
+Colunas para soma: ['Shots', 'ShotsOT', 'KeyPasses', 'AerialsWon', 'Touches', 'Passes', 'Crosses', 'AccCrosses', 'LongBalls', 'AccLongBalls', 'ThroughBalls', 'AccThroughBalls', 'Dribbles', 'Fouled', 'Offsides', 'Dispossessed', 'UnsuccessfulTouches', 'TotalTackles', 'Interceptions', 'Clearances', 'BlockedShots', 'Fouls']</code></pre>
+</div>
+</div>
+<div id="39cfbdef" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Criando agregações por time</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>agregacoes <span class="op">=</span> {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Player'</span>: <span class="st">'count'</span>,  <span class="co"># Número de jogadores</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Adicionando agregações especiais</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>agregacoes.update(colunas_especiais)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Adicionando somas</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> colunas_soma:</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    agregacoes[col] <span class="op">=</span> <span class="st">'sum'</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Aplicando agregações</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>estatisticas_times <span class="op">=</span> estatisticas_jogadores.groupby(</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Team'</span>).agg(agregacoes).<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Renomeando colunas para clareza</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>estatisticas_times.rename(columns<span class="op">=</span>{</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Player'</span>: <span class="st">'NumJogadores'</span>,</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Age'</span>: <span class="st">'IdadeMedia'</span>,</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Rating'</span>: <span class="st">'RatingMedio'</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== ESTATÍSTICAS POR TIME ==="</span>)</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dimensões: </span><span class="sc">{</span>estatisticas_times<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Tabela de estatísticas por time:"</span>)</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(estatisticas_times)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== ESTATÍSTICAS POR TIME ===
+Dimensões: (2, 26)
+
+Tabela de estatísticas por time:
+            NumJogadores  IdadeMedia  RatingMedio    PA%  Shots  ShotsOT  \
+Team                                                                       
+Fluminense            15       30.67         6.92  63.36     11        4   
+Inter                 16       27.44         6.24  86.02     16        4   
+
+            KeyPasses  AerialsWon  Touches  Passes  Crosses  AccCrosses  \
+Team                                                                      
+Fluminense          7          10      444     240        8           4   
+Inter              11          18      689     507       27           5   
+
+            LongBalls  AccLongBalls  ThroughBalls  AccThroughBalls  Dribbles  \
+Team                                                                           
+Fluminense         47            17             0                0         4   
+Inter              35            22             2                0         6   
+
+            Fouled  Offsides  Dispossessed  UnsuccessfulTouches  TotalTackles  \
+Team                                                                            
+Fluminense      14         3             4                   14            18   
+Inter           15         3             8                    9            13   
+
+            Interceptions  Clearances  BlockedShots  Fouls  
+Team                                                        
+Fluminense             11          41             2     16  
+Inter                   6           8             1     15  </code></pre>
+</div>
+</div>
+<div id="dd6a762a" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Salvando estatísticas por time</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>estatisticas_times.to_csv(<span class="st">'estatisticas_times_agregadas.csv'</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✓ Estatísticas por time salvas como 'estatisticas_times_agregadas.csv'"</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Estatísticas descritivas</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Estatísticas descritivas:"</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(estatisticas_times.describe())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✓ Estatísticas por time salvas como 'estatisticas_times_agregadas.csv'
+
+Estatísticas descritivas:
+       NumJogadores  IdadeMedia  RatingMedio       PA%      Shots  ShotsOT  \
+count      2.000000    2.000000     2.000000   2.00000   2.000000      2.0   
+mean      15.500000   29.055000     6.580000  74.69000  13.500000      4.0   
+std        0.707107    2.283955     0.480833  16.02304   3.535534      0.0   
+min       15.000000   27.440000     6.240000  63.36000  11.000000      4.0   
+25%       15.250000   28.247500     6.410000  69.02500  12.250000      4.0   
+50%       15.500000   29.055000     6.580000  74.69000  13.500000      4.0   
+75%       15.750000   29.862500     6.750000  80.35500  14.750000      4.0   
+max       16.000000   30.670000     6.920000  86.02000  16.000000      4.0   
+
+       KeyPasses  AerialsWon     Touches      Passes    Crosses  AccCrosses  \
+count   2.000000    2.000000    2.000000    2.000000   2.000000    2.000000   
+mean    9.000000   14.000000  566.500000  373.500000  17.500000    4.500000   
+std     2.828427    5.656854  173.241161  188.797511  13.435029    0.707107   
+min     7.000000   10.000000  444.000000  240.000000   8.000000    4.000000   
+25%     8.000000   12.000000  505.250000  306.750000  12.750000    4.250000   
+50%     9.000000   14.000000  566.500000  373.500000  17.500000    4.500000   
+75%    10.000000   16.000000  627.750000  440.250000  22.250000    4.750000   
+max    11.000000   18.000000  689.000000  507.000000  27.000000    5.000000   
+
+       LongBalls  AccLongBalls  ThroughBalls  AccThroughBalls  Dribbles  \
+count   2.000000      2.000000      2.000000              2.0  2.000000   
+mean   41.000000     19.500000      1.000000              0.0  5.000000   
+std     8.485281      3.535534      1.414214              0.0  1.414214   
+min    35.000000     17.000000      0.000000              0.0  4.000000   
+25%    38.000000     18.250000      0.500000              0.0  4.500000   
+50%    41.000000     19.500000      1.000000              0.0  5.000000   
+75%    44.000000     20.750000      1.500000              0.0  5.500000   
+max    47.000000     22.000000      2.000000              0.0  6.000000   
+
+          Fouled  Offsides  Dispossessed  UnsuccessfulTouches  TotalTackles  \
+count   2.000000       2.0      2.000000             2.000000      2.000000   
+mean   14.500000       3.0      6.000000            11.500000     15.500000   
+std     0.707107       0.0      2.828427             3.535534      3.535534   
+min    14.000000       3.0      4.000000             9.000000     13.000000   
+25%    14.250000       3.0      5.000000            10.250000     14.250000   
+50%    14.500000       3.0      6.000000            11.500000     15.500000   
+75%    14.750000       3.0      7.000000            12.750000     16.750000   
+max    15.000000       3.0      8.000000            14.000000     18.000000   
+
+       Interceptions  Clearances  BlockedShots      Fouls  
+count       2.000000    2.000000      2.000000   2.000000  
+mean        8.500000   24.500000      1.500000  15.500000  
+std         3.535534   23.334524      0.707107   0.707107  
+min         6.000000    8.000000      1.000000  15.000000  
+25%         7.250000   16.250000      1.250000  15.250000  
+50%         8.500000   24.500000      1.500000  15.500000  
+75%         9.750000   32.750000      1.750000  15.750000  
+max        11.000000   41.000000      2.000000  16.000000  </code></pre>
+</div>
+</div>
+</section>
+<section id="criação-da-tabela-fato-para-análise-de-correspondência" class="level2">
+<h2 class="anchored" data-anchor-id="criação-da-tabela-fato-para-análise-de-correspondência">5. Criação da Tabela Fato para Análise de Correspondência</h2>
+<p>Vamos criar diferentes versões da tabela fato para análise de correspondência.</p>
+<div id="f397af4f" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Versão 1: Tabela fato completa (todas as estatísticas numéricas)</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>tabela_fato_completa <span class="op">=</span> estatisticas_times.copy()</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Removendo colunas não adequadas para análise de correspondência</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>colunas_remover <span class="op">=</span> [<span class="st">'NumJogadores'</span>, <span class="st">'IdadeMedia'</span>, <span class="st">'RatingMedio'</span>]</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'PA%'</span> <span class="kw">in</span> tabela_fato_completa.columns:</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    colunas_remover.append(<span class="st">'PA%'</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>tabela_fato_completa <span class="op">=</span> tabela_fato_completa.drop(columns<span class="op">=</span>[col <span class="cf">for</span> col <span class="kw">in</span> colunas_remover</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>                                                          <span class="cf">if</span> col <span class="kw">in</span> tabela_fato_completa.columns])</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== TABELA FATO COMPLETA ==="</span>)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dimensões: </span><span class="sc">{</span>tabela_fato_completa<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Estatísticas incluídas: </span><span class="sc">{</span><span class="bu">list</span>(tabela_fato_completa.columns)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Tabela fato completa:"</span>)</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tabela_fato_completa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== TABELA FATO COMPLETA ===
+Dimensões: (2, 22)
+Estatísticas incluídas: ['Shots', 'ShotsOT', 'KeyPasses', 'AerialsWon', 'Touches', 'Passes', 'Crosses', 'AccCrosses', 'LongBalls', 'AccLongBalls', 'ThroughBalls', 'AccThroughBalls', 'Dribbles', 'Fouled', 'Offsides', 'Dispossessed', 'UnsuccessfulTouches', 'TotalTackles', 'Interceptions', 'Clearances', 'BlockedShots', 'Fouls']
+
+Tabela fato completa:
+            Shots  ShotsOT  KeyPasses  AerialsWon  Touches  Passes  Crosses  \
+Team                                                                          
+Fluminense     11        4          7          10      444     240        8   
+Inter          16        4         11          18      689     507       27   
+
+            AccCrosses  LongBalls  AccLongBalls  ThroughBalls  \
+Team                                                            
+Fluminense           4         47            17             0   
+Inter                5         35            22             2   
+
+            AccThroughBalls  Dribbles  Fouled  Offsides  Dispossessed  \
+Team                                                                    
+Fluminense                0         4      14         3             4   
+Inter                     0         6      15         3             8   
+
+            UnsuccessfulTouches  TotalTackles  Interceptions  Clearances  \
+Team                                                                       
+Fluminense                   14            18             11          41   
+Inter                         9            13              6           8   
+
+            BlockedShots  Fouls  
+Team                             
+Fluminense             2     16  
+Inter                  1     15  </code></pre>
+</div>
+</div>
+<div id="b8310434" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Versão 2: Tabela fato simplificada (categorias principais)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== CRIANDO TABELA FATO SIMPLIFICADA ==="</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Definindo categorias principais</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>categorias <span class="op">=</span> {}</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Estatísticas ofensivas</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">all</span>(col <span class="kw">in</span> tabela_fato_completa.columns <span class="cf">for</span> col <span class="kw">in</span> [<span class="st">'Shots'</span>, <span class="st">'ShotsOT'</span>, <span class="st">'Dribbles'</span>]):</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    categorias[<span class="st">'Ataque'</span>] <span class="op">=</span> tabela_fato_completa[<span class="st">'Shots'</span>] <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>        tabela_fato_completa[<span class="st">'ShotsOT'</span>] <span class="op">+</span> tabela_fato_completa[<span class="st">'Dribbles'</span>]</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Estatísticas de passe</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">all</span>(col <span class="kw">in</span> tabela_fato_completa.columns <span class="cf">for</span> col <span class="kw">in</span> [<span class="st">'Passes'</span>, <span class="st">'Crosses'</span>, <span class="st">'LongBalls'</span>]):</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    categorias[<span class="st">'Passe'</span>] <span class="op">=</span> tabela_fato_completa[<span class="st">'Passes'</span>] <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>        tabela_fato_completa[<span class="st">'Crosses'</span>] <span class="op">+</span> tabela_fato_completa[<span class="st">'LongBalls'</span>]</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Estatísticas defensivas</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>colunas_defesa <span class="op">=</span> [<span class="st">'TotalTackles'</span>,</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'Interceptions'</span>, <span class="st">'Clearances'</span>, <span class="st">'BlockedShots'</span>]</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>colunas_defesa_disponiveis <span class="op">=</span> [</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    col <span class="cf">for</span> col <span class="kw">in</span> colunas_defesa <span class="cf">if</span> col <span class="kw">in</span> tabela_fato_completa.columns]</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> colunas_defesa_disponiveis:</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    categorias[<span class="st">'Defesa'</span>] <span class="op">=</span> tabela_fato_completa[colunas_defesa_disponiveis].<span class="bu">sum</span>(</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>        axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Controle de jogo</span></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'Touches'</span> <span class="kw">in</span> tabela_fato_completa.columns:</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    categorias[<span class="st">'ControleBola'</span>] <span class="op">=</span> tabela_fato_completa[<span class="st">'Touches'</span>]</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Disciplina</span></span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'Fouls'</span> <span class="kw">in</span> tabela_fato_completa.columns:</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>    categorias[<span class="st">'Faltas'</span>] <span class="op">=</span> tabela_fato_completa[<span class="st">'Fouls'</span>]</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Criando tabela simplificada</span></span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>tabela_fato_simplificada <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>    categorias, index<span class="op">=</span>tabela_fato_completa.index)</span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Categorias criadas: </span><span class="sc">{</span><span class="bu">list</span>(categorias.keys())<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Tabela fato simplificada:"</span>)</span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tabela_fato_simplificada)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== CRIANDO TABELA FATO SIMPLIFICADA ===
+Categorias criadas: ['Ataque', 'Passe', 'Defesa', 'ControleBola', 'Faltas']
+
+Tabela fato simplificada:
+            Ataque  Passe  Defesa  ControleBola  Faltas
+Team                                                   
+Fluminense      19    295      72           444      16
+Inter           26    569      28           689      15</code></pre>
+</div>
+</div>
+<div id="15e1a608" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Salvando as tabelas fato</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>tabela_fato_completa.to_csv(<span class="st">'tabela_fato_correspondencia_completa.csv'</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>tabela_fato_simplificada.to_csv(<span class="st">'tabela_fato_correspondencia_simplificada.csv'</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✓ Tabela fato completa salva como 'tabela_fato_correspondencia_completa.csv'"</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✓ Tabela fato simplificada salva como 'tabela_fato_correspondencia_simplificada.csv'"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✓ Tabela fato completa salva como 'tabela_fato_correspondencia_completa.csv'
+✓ Tabela fato simplificada salva como 'tabela_fato_correspondencia_simplificada.csv'</code></pre>
+</div>
+</div>
+</section>
+<section id="visualizações-exploratórias" class="level2">
+<h2 class="anchored" data-anchor-id="visualizações-exploratórias">6. Visualizações Exploratórias</h2>
+<p>Vamos criar algumas visualizações para entender melhor os dados.</p>
+<div id="e08c1f9e" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Configuração de visualização</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>plt.style.use(<span class="st">'default'</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'figure.figsize'</span>] <span class="op">=</span> (<span class="dv">12</span>, <span class="dv">8</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Heatmap da tabela fato completa</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">6</span>))</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Heatmap completa</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>sns.heatmap(tabela_fato_completa.T, annot<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>            cmap<span class="op">=</span><span class="st">'YlOrRd'</span>, fmt<span class="op">=</span><span class="st">'.0f'</span>, ax<span class="op">=</span>ax1)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Estatísticas Completas por Time'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, pad<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Times'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Estatísticas'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Heatmap simplificada</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>sns.heatmap(tabela_fato_simplificada.T, annot<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>            cmap<span class="op">=</span><span class="st">'viridis'</span>, fmt<span class="op">=</span><span class="st">'.0f'</span>, ax<span class="op">=</span>ax2)</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">'Categorias Principais por Time'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, pad<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">'Times'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'Categorias'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="notebook_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="057822c1" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparação entre times - categorias principais</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">18</span>, <span class="dv">12</span>))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>cores <span class="op">=</span> [<span class="st">'#FF6B6B'</span>, <span class="st">'#4ECDC4'</span>]  <span class="co"># Cores para os times</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, categoria <span class="kw">in</span> <span class="bu">enumerate</span>(tabela_fato_simplificada.columns):</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">&lt;</span> <span class="bu">len</span>(axes):</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>        valores <span class="op">=</span> tabela_fato_simplificada[categoria]</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> axes[i]</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>        bars <span class="op">=</span> ax.bar(valores.index, valores.values,</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>                      color<span class="op">=</span>cores[:<span class="bu">len</span>(valores)])</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>        ax.set_title(<span class="ss">f'</span><span class="sc">{</span>categoria<span class="sc">}</span><span class="ss">'</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>        ax.set_ylabel(<span class="st">'Total'</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Adicionando valores nas barras</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> bar, valor <span class="kw">in</span> <span class="bu">zip</span>(bars, valores.values):</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>            height <span class="op">=</span> bar.get_height()</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>            ax.text(bar.get_x() <span class="op">+</span> bar.get_width()<span class="op">/</span><span class="fl">2.</span>, height <span class="op">+</span> height<span class="op">*</span><span class="fl">0.01</span>,</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>                    <span class="ss">f'</span><span class="sc">{</span><span class="bu">int</span>(valor)<span class="sc">}</span><span class="ss">'</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'bottom'</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Removendo eixos não utilizados</span></span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(tabela_fato_simplificada.columns), <span class="bu">len</span>(axes)):</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>    axes[i].remove()</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">'Comparação entre Times - Estatísticas Principais'</span>,</span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a>             fontsize<span class="op">=</span><span class="dv">16</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, y<span class="op">=</span><span class="fl">0.98</span>)</span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="notebook_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="análise-comparativa-entre-times" class="level2">
+<h2 class="anchored" data-anchor-id="análise-comparativa-entre-times">7. Análise Comparativa entre Times</h2>
+<p>Vamos fazer uma análise comparativa detalhada entre os times.</p>
+<div id="daec3ab9" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análise comparativa detalhada</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== ANÁLISE COMPARATIVA ENTRE TIMES ==="</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>times <span class="op">=</span> tabela_fato_simplificada.index.tolist()</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Times analisados: </span><span class="sc">{</span>times<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculando diferenças percentuais</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(times) <span class="op">==</span> <span class="dv">2</span>:</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    time1, time2 <span class="op">=</span> times[<span class="dv">0</span>], times[<span class="dv">1</span>]</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>time1<span class="sc">}</span><span class="ss"> vs </span><span class="sc">{</span>time2<span class="sc">}</span><span class="ss">:"</span>)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">50</span>)</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> categoria <span class="kw">in</span> tabela_fato_simplificada.columns:</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>        val1 <span class="op">=</span> tabela_fato_simplificada.loc[time1, categoria]</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>        val2 <span class="op">=</span> tabela_fato_simplificada.loc[time2, categoria]</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> val2 <span class="op">!=</span> <span class="dv">0</span>:</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>            diff_perc <span class="op">=</span> ((val1 <span class="op">-</span> val2) <span class="op">/</span> val2) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>            maior <span class="op">=</span> time1 <span class="cf">if</span> val1 <span class="op">&gt;</span> val2 <span class="cf">else</span> time2</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f"</span><span class="sc">{</span>categoria<span class="sc">:15s}</span><span class="ss">: </span><span class="sc">{</span>time1<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>val1<span class="sc">:6.0f}</span><span class="ss"> | </span><span class="sc">{</span>time2<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>val2<span class="sc">:6.0f}</span><span class="ss"> | Vantagem: </span><span class="sc">{</span>maior<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span><span class="bu">abs</span>(diff_perc)<span class="sc">:5.1f}</span><span class="ss">%)"</span>)</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f"</span><span class="sc">{</span>categoria<span class="sc">:15s}</span><span class="ss">: </span><span class="sc">{</span>time1<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>val1<span class="sc">:6.0f}</span><span class="ss"> | </span><span class="sc">{</span>time2<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>val2<span class="sc">:6.0f}</span><span class="ss"> | Sem comparação possível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== ANÁLISE COMPARATIVA ENTRE TIMES ===
+Times analisados: ['Fluminense', 'Inter']
+
+Fluminense vs Inter:
+--------------------------------------------------
+Ataque         : Fluminense     19 | Inter     26 | Vantagem: Inter ( 26.9%)
+Passe          : Fluminense    295 | Inter    569 | Vantagem: Inter ( 48.2%)
+Defesa         : Fluminense     72 | Inter     28 | Vantagem: Fluminense (157.1%)
+ControleBola   : Fluminense    444 | Inter    689 | Vantagem: Inter ( 35.6%)
+Faltas         : Fluminense     16 | Inter     15 | Vantagem: Fluminense (  6.7%)</code></pre>
+</div>
+</div>
+<div id="55b7925b" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Criando um radar chart para comparação visual</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> criar_radar_chart(dados, times, titulo):</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Número de variáveis</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    num_vars <span class="op">=</span> <span class="bu">len</span>(dados.columns)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ângulos para cada eixo</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    angles <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, num_vars, endpoint<span class="op">=</span><span class="va">False</span>).tolist()</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    angles <span class="op">+=</span> angles[:<span class="dv">1</span>]  <span class="co"># Completar o círculo</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Criar figura</span></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>        figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>), subplot_kw<span class="op">=</span><span class="bu">dict</span>(projection<span class="op">=</span><span class="st">'polar'</span>))</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Cores para cada time</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    cores <span class="op">=</span> [<span class="st">'#FF6B6B'</span>, <span class="st">'#4ECDC4'</span>, <span class="st">'#45B7D1'</span>, <span class="st">'#96CEB4'</span>]</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plotar dados para cada time</span></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, time <span class="kw">in</span> <span class="bu">enumerate</span>(times):</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>        valores <span class="op">=</span> dados.loc[time].tolist()</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>        valores <span class="op">+=</span> valores[:<span class="dv">1</span>]  <span class="co"># Completar o círculo</span></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>        ax.plot(angles, valores, <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span>time, color<span class="op">=</span>cores[i])</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>        ax.fill(angles, valores, alpha<span class="op">=</span><span class="fl">0.25</span>, color<span class="op">=</span>cores[i])</span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Configurar eixos</span></span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks(angles[:<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a>    ax.set_xticklabels(dados.columns)</span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a>    ax.set_ylim(<span class="dv">0</span>, dados.values.<span class="bu">max</span>() <span class="op">*</span> <span class="fl">1.1</span>)</span>
+<span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Adicionar título e legenda</span></span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a>    plt.title(titulo, size<span class="op">=</span><span class="dv">16</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, pad<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb33-36"><a href="#cb33-36" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">'upper right'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.3</span>, <span class="fl">1.0</span>))</span>
+<span id="cb33-37"><a href="#cb33-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-38"><a href="#cb33-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fig</span>
+<span id="cb33-39"><a href="#cb33-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-40"><a href="#cb33-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-41"><a href="#cb33-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalizar dados para o radar chart (0-100)</span></span>
+<span id="cb33-42"><a href="#cb33-42" aria-hidden="true" tabindex="-1"></a>dados_normalizados <span class="op">=</span> tabela_fato_simplificada.copy()</span>
+<span id="cb33-43"><a href="#cb33-43" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> dados_normalizados.columns:</span>
+<span id="cb33-44"><a href="#cb33-44" aria-hidden="true" tabindex="-1"></a>    max_val <span class="op">=</span> dados_normalizados[col].<span class="bu">max</span>()</span>
+<span id="cb33-45"><a href="#cb33-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> max_val <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb33-46"><a href="#cb33-46" aria-hidden="true" tabindex="-1"></a>        dados_normalizados[col] <span class="op">=</span> (dados_normalizados[col] <span class="op">/</span> max_val) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb33-47"><a href="#cb33-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-48"><a href="#cb33-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar radar chart</span></span>
+<span id="cb33-49"><a href="#cb33-49" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(times) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb33-50"><a href="#cb33-50" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> criar_radar_chart(dados_normalizados, times,</span>
+<span id="cb33-51"><a href="#cb33-51" aria-hidden="true" tabindex="-1"></a>                            <span class="st">'Comparação de Desempenho entre Times'</span>)</span>
+<span id="cb33-52"><a href="#cb33-52" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="notebook_files/figure-html/cell-19-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="resumo-e-arquivos-gerados" class="level2">
+<h2 class="anchored" data-anchor-id="resumo-e-arquivos-gerados">8. Resumo e Arquivos Gerados</h2>
+<p>Vamos fazer um resumo final e listar todos os arquivos gerados.</p>
+<div id="1ad96527" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificando arquivos gerados</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>arquivos_gerados <span class="op">=</span> [</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'estatisticas_jogadores_consolidada.csv'</span>,</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'estatisticas_times_agregadas.csv'</span>,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'tabela_fato_correspondencia_completa.csv'</span>,</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'tabela_fato_correspondencia_simplificada.csv'</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== RESUMO DOS ARQUIVOS GERADOS ==="</span>)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> arquivo <span class="kw">in</span> arquivos_gerados:</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(arquivo):</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Carregar para mostrar dimensões</span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>        df <span class="op">=</span> pd.read_csv(arquivo)</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"✓ </span><span class="sc">{</span>arquivo<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"   Dimensões: </span><span class="sc">{</span>df<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"   Colunas: </span><span class="sc">{</span>df<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>()</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"✗ </span><span class="sc">{</span>arquivo<span class="sc">}</span><span class="ss"> - NÃO ENCONTRADO"</span>)</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== RESUMO DOS ARQUIVOS GERADOS ===
+
+✓ estatisticas_jogadores_consolidada.csv
+   Dimensões: (31, 28)
+   Colunas: 28
+
+✓ estatisticas_times_agregadas.csv
+   Dimensões: (2, 27)
+   Colunas: 27
+
+✓ tabela_fato_correspondencia_completa.csv
+   Dimensões: (2, 23)
+   Colunas: 23
+
+✓ tabela_fato_correspondencia_simplificada.csv
+   Dimensões: (2, 6)
+   Colunas: 6
+</code></pre>
+</div>
+</div>
+<div id="c0d78860" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumo final das análises</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== RESUMO FINAL ==="</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"1. CONSOLIDAÇÃO DE DADOS:"</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"   • </span><span class="sc">{</span><span class="bu">len</span>(datasets)<span class="sc">}</span><span class="ss"> datasets originais consolidados"</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"   • </span><span class="sc">{</span><span class="bu">len</span>(colunas_duplicadas)<span class="sc">}</span><span class="ss"> colunas duplicadas identificadas e tratadas"</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"   • </span><span class="sc">{</span>estatisticas_jogadores<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> jogadores consolidados"</span>)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"   • </span><span class="sc">{</span>estatisticas_jogadores<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> estatísticas por jogador"</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"2. AGREGAÇÃO POR TIME:"</span>)</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"   • </span><span class="sc">{</span><span class="bu">len</span>(times)<span class="sc">}</span><span class="ss"> times analisados"</span>)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f"   • </span><span class="sc">{</span>tabela_fato_completa<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> estatísticas agregadas (versão completa)"</span>)</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f"   • </span><span class="sc">{</span>tabela_fato_simplificada<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> categorias principais (versão simplificada)"</span>)</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"3. TABELAS PARA ANÁLISE DE CORRESPONDÊNCIA:"</span>)</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   • Tabela completa: matriz times x todas as estatísticas"</span>)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   • Tabela simplificada: matriz times x categorias principais"</span>)</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   • Ambas prontas para análise de correspondência"</span>)</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"4. PRÓXIMOS PASSOS RECOMENDADOS:"</span>)</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   • Use 'tabela_fato_correspondencia_simplificada.csv' para análise inicial"</span>)</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   • Use 'tabela_fato_correspondencia_completa.csv' para análise detalhada"</span>)</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   • Aplique técnicas de análise de correspondência (CA)"</span>)</span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   • Interprete os resultados considerando o contexto do jogo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== RESUMO FINAL ===
+
+1. CONSOLIDAÇÃO DE DADOS:
+   • 4 datasets originais consolidados
+   • 9 colunas duplicadas identificadas e tratadas
+   • 31 jogadores consolidados
+   • 28 estatísticas por jogador
+
+2. AGREGAÇÃO POR TIME:
+   • 2 times analisados
+   • 22 estatísticas agregadas (versão completa)
+   • 5 categorias principais (versão simplificada)
+
+3. TABELAS PARA ANÁLISE DE CORRESPONDÊNCIA:
+   • Tabela completa: matriz times x todas as estatísticas
+   • Tabela simplificada: matriz times x categorias principais
+   • Ambas prontas para análise de correspondência
+
+4. PRÓXIMOS PASSOS RECOMENDADOS:
+   • Use 'tabela_fato_correspondencia_simplificada.csv' para análise inicial
+   • Use 'tabela_fato_correspondencia_completa.csv' para análise detalhada
+   • Aplique técnicas de análise de correspondência (CA)
+   • Interprete os resultados considerando o contexto do jogo</code></pre>
+</div>
+</div>
+</section>
+<section id="conclusão" class="level2">
+<h2 class="anchored" data-anchor-id="conclusão">Conclusão</h2>
+<p>O processo de consolidação foi concluído com sucesso!</p>
+<section id="arquivos-gerados" class="level3">
+<h3 class="anchored" data-anchor-id="arquivos-gerados">Arquivos Gerados:</h3>
+<ol type="1">
+<li><strong><code>estatisticas_jogadores_consolidada.csv</code></strong> - Todas as estatísticas por jogador (sem duplicatas)</li>
+<li><strong><code>estatisticas_times_agregadas.csv</code></strong> - Estatísticas agregadas por time</li>
+<li><strong><code>tabela_fato_correspondencia_completa.csv</code></strong> - Matriz completa para análise de correspondência</li>
+<li><strong><code>tabela_fato_correspondencia_simplificada.csv</code></strong> - Matriz simplificada com categorias principais</li>
+</ol>
+</section>
+<section id="para-análise-de-correspondência" class="level3">
+<h3 class="anchored" data-anchor-id="para-análise-de-correspondência">Para Análise de Correspondência:</h3>
+<ul>
+<li><strong>Linhas</strong>: Times (Inter, Fluminense)<br>
+</li>
+<li><strong>Colunas</strong>: Estatísticas/Categorias de jogo</li>
+<li><strong>Valores</strong>: Totais agregados por time</li>
+</ul>
+<p>As tabelas estão prontas para análise de correspondência usando bibliotecas como <code>prince</code>, <code>sklearn</code> ou <code>ca</code> em R.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

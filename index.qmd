@@ -1,7 +1,9 @@
 ---
 title: "Análise de Correspondência: Fluminense vs Inter de Milão"
-subtitle: "Uma análise adaptada para dados com limitação dimensional"
-author: "Análise de Dados Esportivos"
+author: "Marcus Ramalho e Silvia"
+affiliation: "Universidade Federal do Rio de Janeiro"
+date: today
+lan: pt-BR
 format: 
   html:
     toc: true
@@ -32,13 +34,29 @@ library(factoextra)  # Para visualização de resultados
 library(ca)          # Pacote alternativo para CA
 library(knitr)       # Para formatação de tabelas
 library(kableExtra)  # Para tabelas mais elaboradas
+library(plotly)      # Para visualizações 3D interativas
 
 # Carregar os dados
 dados <- read.csv("estatisticas_jogadores_consolidada.csv", stringsAsFactors = FALSE)
 
-# Visualizar estrutura dos dados
-glimpse(dados)
+# Visualizar estrutura dos dados (primeiras linhas)
+kable(head(dados, 5), 
+      caption = "Primeiras 5 linhas do conjunto de dados") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  scroll_box(width = "100%")
 
+# Resumo das variáveis principais
+resumo_vars <- data.frame(
+  Variavel = names(dados)[4:15], # Estatísticas principais
+  Minimo = sapply(dados[, 4:15], min, na.rm = TRUE),
+  Media = round(sapply(dados[, 4:15], mean, na.rm = TRUE), 2),
+  Mediana = sapply(dados[, 4:15], median, na.rm = TRUE),
+  Maximo = sapply(dados[, 4:15], max, na.rm = TRUE)
+)
+
+kable(resumo_vars, 
+      caption = "Resumo das principais estatísticas numéricas") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 # Agrupamento por Posição e Time
@@ -63,7 +81,14 @@ dados <- dados %>%
   mutate(Posicao_Time = paste(PosicaoAgrupada, Team, sep = "_"))
 
 # Visualizar a distribuição de jogadores por posição agrupada e time
-table(dados$Posicao_Time)
+distribuicao_posicoes <- as.data.frame.matrix(table(dados$PosicaoAgrupada, dados$Team))
+distribuicao_posicoes$Posicao <- rownames(distribuicao_posicoes)
+distribuicao_posicoes <- distribuicao_posicoes %>% 
+  select(Posicao, everything())
+
+kable(distribuicao_posicoes, 
+      caption = "Distribuição de jogadores por posição e time") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 # Conversão de Estatísticas Numéricas em Variáveis Categóricas
@@ -178,12 +203,24 @@ for (var in variaveis_para_categorizar) {
   })
 }
 
-# Verificar quais variáveis categóricas foram criadas
-cat("Variáveis categorizadas criadas:", 
-    paste(grep("_Cat$", names(dados_categorizados), value = TRUE), collapse = ", "))
+# Mostrar as variáveis categóricas criadas
+variaveis_categorizadas <- grep("_Cat$", names(dados_categorizados), value = TRUE)
+vars_info <- data.frame(
+  Variável_Original = variaveis_para_categorizar,
+  Variável_Categorizada = variaveis_categorizadas
+)
+
+kable(vars_info, 
+      caption = "Variáveis categorizadas criadas") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 # Visualizar as novas variáveis categorizadas
-head(dados_categorizados[, grep("_Cat$", names(dados_categorizados))])
+dados_cat_amostra <- dados_categorizados[1:6, c("Player", "Team", "PosicaoAgrupada", grep("_Cat$", names(dados_categorizados), value = TRUE))]
+
+kable(dados_cat_amostra, 
+      caption = "Amostra das variáveis categorizadas (primeiros 6 jogadores)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(width = "100%")
 ```
 
 # Construção da Tabela de Contingência por Posição e Time
@@ -219,14 +256,22 @@ for (var in variaveis_categorizadas) {
 # Mostrar a tabela de contingência (primeiras colunas)
 kable(tabela_completa[, 1:min(10, ncol(tabela_completa))], 
       caption = "Tabela de Contingência por Posição e Time (primeiras 10 colunas)") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  scroll_box(width = "100%")
 
-# Verificar as dimensões da tabela
-cat("Dimensões da tabela de contingência:", dim(tabela_completa), "\n")
+# Mostrar informações sobre a dimensionalidade da tabela
+info_tabela <- data.frame(
+  Métrica = c("Número de linhas", "Número de colunas", "Número máximo de dimensões possíveis"),
+  Valor = c(
+    nrow(tabela_completa), 
+    ncol(tabela_completa),
+    min(nrow(tabela_completa) - 1, ncol(tabela_completa) - 1)
+  )
+)
 
-# Calcular o número máximo de dimensões possíveis
-max_dims <- min(nrow(tabela_completa) - 1, ncol(tabela_completa) - 1)
-cat("Número máximo de dimensões possíveis:", max_dims, "\n")
+kable(info_tabela, 
+      caption = "Informações sobre a dimensionalidade da tabela de contingência") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 # Execução da Análise de Correspondência
@@ -236,15 +281,18 @@ Com a tabela de contingência pronta, vamos realizar a Análise de Correspondên
 # Realizar a análise de correspondência
 ca_result <- CA(tabela_completa, graph = FALSE)
 
-# Sumário dos resultados
-summary(ca_result)
+# Mostrar a inércia total e a contribuição de cada dimensão
+eigenvalues_df <- as.data.frame(ca_result$eig)
+names(eigenvalues_df) <- c("Autovalor", "Percentual de Variância (%)", "Percentual Acumulado (%)")
+eigenvalues_df$Dimensão <- paste("Dimensão", 1:nrow(eigenvalues_df))
+eigenvalues_df <- eigenvalues_df %>% 
+  select(Dimensão, everything())
+eigenvalues_df <- eigenvalues_df[1:min(5, nrow(eigenvalues_df)),] # Mostrar apenas as 5 primeiras dimensões
 
-# Verificar a inércia total e a contribuição de cada dimensão
-print(ca_result$eig)
-
-# Calcular a porcentagem acumulada de variância explicada
-var_acumulada <- cumsum(ca_result$eig[, 2])
-print(var_acumulada)
+kable(eigenvalues_df, 
+      caption = "Autovalores e variância explicada por cada dimensão",
+      digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 # Avaliação da Qualidade da Representação
@@ -298,6 +346,30 @@ ggplot(col_contrib_long, aes(x = reorder(Estatistica, Contribuicao),
   theme_minimal() +
   labs(title = "Top Contribuições das Estatísticas para as Dimensões",
        x = "Estatística", y = "Contribuição (%)")
+
+# Tabela com contribuições das principais posições por time
+top_pos_contrib <- row_contrib_df %>%
+  select(Posicao_Time, `Dim 1`, `Dim 2`) %>%
+  arrange(desc(`Dim 1`)) %>%
+  head(5)
+
+kable(top_pos_contrib, 
+      caption = "Top 5 Posições com Maior Contribuição para Dimensão 1",
+      digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+# Tabela com contribuições das principais estatísticas
+top_stat_contrib <- as.data.frame(col_contrib) %>%
+  select(`Dim 1`, `Dim 2`) %>%
+  mutate(Estatistica = rownames(.)) %>%
+  arrange(desc(`Dim 1`)) %>%
+  head(5) %>%
+  select(Estatistica, everything())
+
+kable(top_stat_contrib, 
+      caption = "Top 5 Estatísticas com Maior Contribuição para Dimensão 1",
+      digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 # Visualização dos Resultados
@@ -322,6 +394,13 @@ col_coords <- as.data.frame(ca_result$col$coord[, 1:2])
 col_coords$Estatistica <- rownames(col_coords)
 # Renomeando as colunas para evitar problemas com espaços no nome
 names(col_coords)[1:2] <- c("Dim1", "Dim2")
+
+# Tabela com coordenadas das posições
+kable(row_coords[, c("Posicao_Time", "Posicao", "Time", "Dim1", "Dim2")], 
+      caption = "Coordenadas das Posições no Mapa Perceptual",
+      digits = 3) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(height = "300px")
 
 # Mapa perceptual - Biplot com posição_time
 ggplot() +
@@ -374,7 +453,7 @@ fviz_ca_row(ca_result,
 fviz_ca_biplot(ca_result, 
               repel = TRUE,
               col.row = as.factor(row_coords$Time),
-              col.col = "green",
+              col.col = "darkgreen",
               title = "Mapa Perceptual Completo: Posições por Time e Estatísticas") +
   theme_minimal()
 ```
@@ -393,6 +472,14 @@ posicoes_comuns <- dados_categorizados %>%
 # Filtrar apenas as posições comuns do mapa
 posicoes_comparacao <- row_coords %>%
   filter(Posicao %in% posicoes_comuns)
+
+# Mostrar as posições comuns e suas coordenadas
+kable(posicoes_comparacao %>% 
+        arrange(Posicao, Time) %>% 
+        select(Posicao, Time, Dim1, Dim2),
+      caption = "Coordenadas das Posições Comuns aos Dois Times",
+      digits = 3) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 # Visualizar comparação direta entre posições equivalentes nos dois times
 ggplot(posicoes_comparacao, aes(x = Dim1, y = Dim2, color = Time, label = Posicao)) +
@@ -436,10 +523,12 @@ top_dim2_df <- data.frame(
 )
 
 # Exibir resultados
-kable(top_dim1_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 1") %>%
+kable(top_dim1_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 1",
+      digits = 2) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
-kable(top_dim2_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 2") %>%
+kable(top_dim2_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 2",
+      digits = 2) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
 # Criar um dataframe com as coordenadas e contribuições
@@ -468,9 +557,6 @@ Para explorar ainda mais as relações entre posições por time e estatísticas
 #| warning: false
 #| message: false
 
-# Carregar pacote para visualização 3D
-library(plotly)
-
 # Extrair as coordenadas para as três primeiras dimensões
 row_coords_3d <- as.data.frame(ca_result$row$coord[, 1:3])
 row_coords_3d$Posicao_Time <- rownames(row_coords_3d)
@@ -487,6 +573,14 @@ row_coords_3d <- row_coords_3d %>%
 col_coords_3d <- as.data.frame(ca_result$col$coord[, 1:3])
 col_coords_3d$Estatistica <- rownames(col_coords_3d)
 names(col_coords_3d)[1:3] <- c("Dim1", "Dim2", "Dim3")
+
+# Mostrar as coordenadas 3D das posições
+kable(row_coords_3d %>% 
+        select(Posicao, Time, Dim1, Dim2, Dim3),
+      caption = "Coordenadas 3D das Posições",
+      digits = 3) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(height = "300px")
 
 # Filtrar apenas as estatísticas mais contributivas
 top_cols_dim3 <- names(sort(ca_result$col$contrib[, 3], decreasing = TRUE)[1:10])
@@ -619,3 +713,4 @@ fig_comparison <- fig_comparison %>%
 
 fig_comparison
 ```
+
