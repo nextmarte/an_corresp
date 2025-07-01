@@ -59,14 +59,14 @@ dados <- dados %>%
   ))
 
 # Visualizar a distribuição de jogadores por posição agrupada
-table(dados$PosicaoAgrupada, dados$Equipe)
+table(dados$PosicaoAgrupada, dados$Team)
 ```
 
 Conversão de Estatísticas Numéricas em Variáveis Categóricas
 Agora, vamos converter as principais estatísticas numéricas em variáveis categóricas, usando quartis para definir as categorias:
 
 ```{r}
-# Função corrigida para categorizar variáveis numéricas
+# Função ajustada para categorizar variáveis numéricas com apenas duas categorias em português
 categorizar_variavel <- function(x, prefixo) {
   # Verificar se o vetor tem elementos
   if (length(x) == 0) {
@@ -88,7 +88,7 @@ categorizar_variavel <- function(x, prefixo) {
     return(result)
   }
   
-  # Se houver poucos valores únicos, usar esses valores como categorias
+  # Se houver poucos valores únicos (2 ou 3), usar esses valores como categorias
   if (length(unique(x_clean)) <= 3) {
     categorias <- as.character(x)
     categorias[!is.na(categorias)] <- paste0(prefixo, "_", categorias[!is.na(categorias)])
@@ -96,62 +96,40 @@ categorizar_variavel <- function(x, prefixo) {
     return(categorias)
   }
   
-  # Caso contrário, usar tercis
-  quartis <- try(quantile(x_clean, probs = c(0, 0.33, 0.66, 1), na.rm = TRUE), silent = TRUE)
+  # Caso contrário, usar a mediana para categorização binária (Alto/Baixo)
+  mediana <- median(x_clean, na.rm = TRUE)
   
-  # Se houver erro no cálculo dos quartis, tentar uma abordagem mais simples
-  if (inherits(quartis, "try-error") || length(unique(quartis)) < 4) {
-    # Usar uma categorização mais simples baseada na mediana
-    if (all(is.numeric(x_clean))) {
-      breaks_valores <- c(-Inf, min(x_clean, na.rm = TRUE) + 0.001, 
-                       median(x_clean, na.rm = TRUE), 
-                       max(x_clean, na.rm = TRUE) + 0.001)
-      
-      # Garantir que os breaks são únicos
-      if (length(unique(breaks_valores)) < 4) {
-        # Se ainda não conseguimos breaks únicos, usar valores arbitrários
-        resultado <- rep(paste0(prefixo, "_Médio"), length(x))
-        resultado[x > median(x_clean, na.rm = TRUE)] <- paste0(prefixo, "_Alto")
-        resultado[x < median(x_clean, na.rm = TRUE)] <- paste0(prefixo, "_Baixo")
-        resultado[is.na(x)] <- paste0(prefixo, "_NA")
-      } else {
-        resultado <- cut(x, 
-                     breaks = breaks_valores, 
-                     labels = c("Baixo", "Médio", "Alto"),
-                     include.lowest = TRUE)
-        # Adicionar o prefixo
-        levels(resultado) <- paste0(prefixo, "_", levels(resultado))
-        # Substituir NAs
-        resultado[is.na(resultado)] <- paste0(prefixo, "_NA")
-      }
-    } else {
-      # Para dados não numéricos
-      resultado <- rep(paste0(prefixo, "_Categoria"), length(x))
-      resultado[is.na(x)] <- paste0(prefixo, "_NA")
-    }
-  } else {
-    # Usar a categorização por quartis como planejado
-    resultado <- try(cut(x, 
-                    breaks = quartis, 
-                    labels = c("Baixo", "Médio", "Alto"),
-                    include.lowest = TRUE), silent = TRUE)
-    
-    # Verificar se o cut funcionou
-    if (inherits(resultado, "try-error")) {
-      # Abordagem alternativa se o cut falhar
-      resultado <- rep(paste0(prefixo, "_Médio"), length(x))
-      resultado[x > quartis[3]] <- paste0(prefixo, "_Alto")
-      resultado[x < quartis[2]] <- paste0(prefixo, "_Baixo")
-      resultado[is.na(x)] <- paste0(prefixo, "_NA")
-    } else {
-      # Adicionar o prefixo
-      levels(resultado) <- paste0(prefixo, "_", levels(resultado))
-      # Substituir NAs
-      resultado[is.na(resultado)] <- paste0(prefixo, "_NA")
-    }
-  }
+  resultado <- rep(paste0(prefixo, "_Baixo"), length(x))
+  resultado[x > mediana] <- paste0(prefixo, "_Alto")
+  resultado[is.na(x)] <- paste0(prefixo, "_NA")
   
   return(resultado)
+}
+
+# Mapeamento de nomes em inglês para português
+mapear_nome_variavel <- function(prefixo) {
+  # Dicionário de tradução
+  traducoes <- list(
+    "Shots" = "Chutes",
+    "KeyPasses" = "PassesChave",
+    "PA" = "PrecisaoPasses",
+    "AerialsWon" = "DuelosAereos",
+    "Touches" = "Toques",
+    "Passes" = "Passes",
+    "Crosses" = "Cruzamentos",
+    "Dribbles" = "Dribles",
+    "Fouled" = "SofrerFaltas",
+    "TotalTackles" = "Desarmes",
+    "Interceptions" = "Interceptacoes",
+    "Clearances" = "Rebatidas"
+  )
+  
+  # Verificar se existe tradução para o prefixo
+  if (prefixo %in% names(traducoes)) {
+    return(traducoes[[prefixo]])
+  } else {
+    return(prefixo)  # Se não encontrar tradução, manter o original
+  }
 }
 
 # Selecionar as variáveis numéricas mais relevantes para categorização
@@ -164,17 +142,13 @@ variaveis_para_categorizar <- c(
 # Criar as variáveis categorizadas
 dados_categorizados <- dados
 
-# Imprimir as variáveis antes de categorizar para debug
-print("Verificando variáveis antes da categorização:")
-for (var in variaveis_para_categorizar) {
-  print(paste("Variável:", var))
-  print(summary(dados[[var]]))
-}
-
-# Loop melhorado com tratamento de erro
+# Loop com tradução para português e categorização binária
 for (var in variaveis_para_categorizar) {
   # Remover caracteres especiais do nome da variável para criar o prefixo
   prefixo <- gsub("[^[:alnum:]]", "", var)
+  
+  # Traduzir o prefixo para português
+  prefixo_pt <- mapear_nome_variavel(prefixo)
   
   # Verificar se a variável existe
   if (!(var %in% names(dados))) {
@@ -185,7 +159,7 @@ for (var in variaveis_para_categorizar) {
   # Capturar e reportar erros durante a categorização
   tryCatch({
     # Categorizar a variável
-    resultado_cat <- categorizar_variavel(dados[[var]], prefixo)
+    resultado_cat <- categorizar_variavel(dados[[var]], prefixo_pt)
     
     # Verificar se o resultado tem o comprimento correto
     if (length(resultado_cat) == nrow(dados)) {
@@ -322,10 +296,14 @@ Vamos criar visualizações do mapa perceptual da Análise de Correspondência:
 # Criar um dataframe com as coordenadas das linhas (posições)
 row_coords <- as.data.frame(ca_result$row$coord[, 1:2])
 row_coords$Posicao <- rownames(row_coords)
+# Renomeando as colunas para evitar problemas com espaços no nome
+names(row_coords)[1:2] <- c("Dim1", "Dim2")
 
 # Criar um dataframe com as coordenadas das colunas (estatísticas)
 col_coords <- as.data.frame(ca_result$col$coord[, 1:2])
 col_coords$Estatistica <- rownames(col_coords)
+# Renomeando as colunas para evitar problemas com espaços no nome
+names(col_coords)[1:2] <- c("Dim1", "Dim2")
 
 # Adicionar informações dos jogadores para colorir por time
 jogador_posicao <- dados_categorizados %>%
@@ -335,26 +313,31 @@ jogador_posicao <- dados_categorizados %>%
 # Juntar com as coordenadas das linhas
 row_coords_with_team <- row_coords %>%
   left_join(jogador_posicao, by = "Posicao") %>%
-  group_by(Posicao, Dim 1, Dim 2) %>%
-  summarise(Inter_count = sum(Team == "Inter"),
-            Fluminense_count = sum(Team == "Fluminense"),
-            Team_predominant = ifelse(Inter_count > Fluminense_count, "Inter", "Fluminense"),
-            .groups = "drop")
+  group_by(Posicao, Dim1, Dim2) %>%
+  summarise(
+    Inter_count = sum(Team == "Inter", na.rm = TRUE),
+    Fluminense_count = sum(Team == "Fluminense", na.rm = TRUE),
+    Team_predominant = ifelse(Inter_count > Fluminense_count, "Inter", "Fluminense"),
+    .groups = "drop"
+  )
 
 # Mapa perceptual - Biplot básico
 ggplot() +
   # Pontos das posições (linhas)
-  geom_point(data = row_coords_with_team, aes(x = `Dim 1`, y = `Dim 2`, 
-                                            color = Team_predominant, size = 3)) +
-  geom_text(data = row_coords_with_team, aes(x = `Dim 1`, y = `Dim 2`, 
-                                          label = Posicao), vjust = -1) +
+  geom_point(data = row_coords_with_team, 
+             aes(x = Dim1, y = Dim2, color = Team_predominant),
+             size = 3) +
+  geom_text(data = row_coords_with_team, 
+            aes(x = Dim1, y = Dim2, label = Posicao), 
+            vjust = -1) +
   # Pontos das estatísticas (colunas) - apenas as mais contributivas
   geom_point(data = col_coords %>% 
                filter(Estatistica %in% top_cols), 
-             aes(x = `Dim 1`, y = `Dim 2`), shape = 17, color = "darkred") +
+             aes(x = Dim1, y = Dim2), 
+             shape = 17, color = "darkred") +
   geom_text(data = col_coords %>% 
               filter(Estatistica %in% top_cols), 
-            aes(x = `Dim 1`, y = `Dim 2`, label = Estatistica), 
+            aes(x = Dim1, y = Dim2, label = Estatistica), 
             vjust = 1, size = 3, color = "darkred") +
   # Adicionar linhas de referência nos eixos
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
@@ -367,8 +350,7 @@ ggplot() +
                         "%) vs. Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)"),
        x = paste0("Dimensão 1 (", round(ca_result$eig[1, 2], 1), "%)"),
        y = paste0("Dimensão 2 (", round(ca_result$eig[2, 2], 1), "%)"),
-       color = "Time Predominante",
-       size = NULL) +
+       color = "Time Predominante") +
   theme(legend.position = "bottom")
 ```
 
