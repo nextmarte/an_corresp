@@ -7,8 +7,9 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
-      - about.qmd
+        text: ANACOR
+      - href: show.qmd
+        text: Artigo
 
 format:
   html:

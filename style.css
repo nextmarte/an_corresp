@@ -1,0 +1,65 @@
+.title {
+    font-size: 3rem !important; 
+}
+
+.slide-logo {
+  transform: scale(2) translate(-30px, -10px) !important; /* Ajuste estes valores conforme necessário */
+}
+
+.footer {
+  font-size: 1.5rem !important;
+  color: #ffffff !important;
+  text-align: center !important;
+}
+
+.p {
+  font-size: small !important ;
+  text-align: justify !important;
+}
+
+.li {
+  font-size: small !important ;
+  text-align: justify !important;
+}
+
+#li {
+    font-size: 0.5rem !important;
+}
+
+.reveal .slide ul li, .reveal .slide ol li {
+    margin-top: 0.4em;
+    margin-bottom: 0.2em;
+    font-size: 1.5rem !important;
+}
+.reveal .slide figure>figcaption, .reveal .slide img.stretch+p.caption, .reveal .slide img.r-stretch+p.caption {
+    font-size: 0.3em;
+}
+
+.reveal table th, .reveal table td {
+    font-size: 0.7rem !important;
+    text-align: center !important;
+  }
+
+  .reveal h2{
+    font-size: 2rem !important;
+    text-align: center !important;
+  }
+
+.reveal strong, .reveal b {
+    font-weight: bold;
+    font-size: 1.5rem !important;
+}
+
+.reveal p, .reveal .slides section, .reveal .slides section>section {
+    line-height: 1.3;
+    font-size: 1.5rem !important;
+}
+
+.reveal .table th, .reveal .table td {
+    font-size: 1rem !important;
+
+}
+
+.reveal .caption-top td, .reveal .caption-top th {
+    font-size: 1rem !important;
+}

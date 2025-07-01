@@ -1,0 +1,234 @@
+---
+title: Análise de correspondência como instrumento para descrição do perfil do trabalhador da cultura de tomate de mesa em Goiás
+subtitle: "Autores: Sueli Martins, Freitas Alves, 
+Paulo Marçal Fernandes, Elton Fialho dos Reis"
+css: ["style.css"]
+author: "Apresentador: Marcus Ramalho"
+format: 
+  revealjs:
+    theme: default
+    slide-number: true
+    footer: "Ciência Rural, v.39, n.7, p.2042-2049, 2009"
+---
+
+## Introdução
+
+-   Contexto do cultivo de tomate em Goiás
+-   Uso intensivo de agrotóxicos na produção
+-   Riscos à saúde dos trabalhadores
+
+::: notes
+O tomate é uma das principais culturas em Goiás e depende de uso intensivo de agrotóxicos
+:::
+
+------------------------------------------------------------------------
+
+## Problema de Pesquisa
+
+-   O cultivo do tomate em Goiás estruturado com uso intensivo de agrotóxicos
+-   Envolve riscos e danos potenciais à saúde dos trabalhadores
+-   Necessidade de compreender o perfil desses trabalhadores
+
+------------------------------------------------------------------------
+
+## Objetivo
+
+Utilizar a Análise de Correspondência Múltipla (ACM) para explorar o perfil do trabalhador da cultura de tomate de mesa em Goiás quanto ao uso de agrotóxicos.
+
+------------------------------------------------------------------------
+
+## Justificativa
+
+-   Intoxicações por agrotóxicos como problema de saúde pública
+-   Condicionantes históricos, agronômicos, sociais e econômicos
+-   Relação entre exposição química e toxicologia humana
+
+------------------------------------------------------------------------
+
+## Produção de Tomate
+
+-   Brasil (2006): 3.362.655 toneladas
+-   Goiás: 759.620 toneladas (maior produtor)
+-   50 municípios em 8 microrregiões produtoras em Goiás
+-   Maiores produtividades: Anicuns (54,5t/ha), Catalão (53,3t/ha), Anápolis (52,1t/ha)
+
+------------------------------------------------------------------------
+
+## Metodologia
+
+-   Aplicação de questionário a 96 trabalhadores
+-   6 municípios produtores de tomate em Goiás
+-   Amostragem sistemática
+-   Análise de Correspondência Múltipla (ACM)
+
+------------------------------------------------------------------------
+
+## Locais Pesquisados
+
+Bonfinópolis, Corumbá de Goiás, Goianápolis, Leopoldo de Bulhões, Pirenópolis, Silvânia
+
+![](images/paste-2.png)
+
+------------------------------------------------------------------------
+
+## Variáveis Investigadas
+
+1.  Fatores socioeconômicos e demográficos
+2.  Percepção de risco
+3.  Uso de agrotóxicos
+4.  Uso de equipamentos de proteção individual (EPI)
+5.  Morbidade referida (intoxicações)
+
+------------------------------------------------------------------------
+
+## Critérios de Inclusão
+
+-   Lavouras com cultura de tomate com mais de 30 dias
+-   Apenas trabalhadores envolvidos diretamente com aplicação de agrotóxicos
+
+------------------------------------------------------------------------
+
+## Análise dos Dados
+
+-   Análise de Correspondência Múltipla (ACM)
+-   Software utilizado: SPADN®
+-   12 variáveis com 37 modalidades
+-   Variáveis ativas e suplementares
+
+------------------------------------------------------------------------
+
+## Características dos Trabalhadores
+
+![Tabela 1 - Descrição e distribuição das características socioeconômicas](images/paste-3.png)
+
+------------------------------------------------------------------------
+
+## Uso de EPI
+
+-   50% não utilizam EPI
+-   29,2% utilizam EPI incompleto
+-   20,8% utilizam EPI completo
+
+------------------------------------------------------------------------
+
+## Motivos para Não Uso de EPI
+
+-   10,4% - dificulta o trabalho
+-   27,1% - desconfortável
+-   31,3% - falta de costume
+-   10,4% - outros motivos
+
+------------------------------------------------------------------------
+
+## Exposição aos Agrotóxicos
+
+-   83,3% gastam até duas horas por aplicação
+-   16,7% gastam mais de duas horas por aplicação
+-   45,8% aplicam em média a cada três dias
+-   35,4% aplicam em média a cada dois dias
+-   18,8% não têm dia definido para aplicação
+
+------------------------------------------------------------------------
+
+## Relato de Intoxicação
+
+-   27,1% relataram sintomas de intoxicação
+-   72,9% não relataram sintomas
+
+------------------------------------------------------------------------
+
+## Resultados da ACM - Inércia
+
+-   Os dois primeiros eixos retiveram 38,88% da variabilidade total
+-   Eixo 1: 20,11% da variabilidade
+-   Eixo 2: 18,77% da variabilidade
+
+------------------------------------------------------------------------
+
+## Contribuições para os Eixos
+
+-   Uso de EPI e motivo de não uso foram as variáveis com maior contribuição
+-   Eixo 1: EPI (42,5%) e motivo de não uso (41%)
+-   Eixo 2: EPI (42,6%) e motivo de não uso (35,7%)
+
+![Tabela 2 - Distância de cada modalidade ao centro de gravidade](images/paste-6.png)
+
+------------------------------------------------------------------------
+
+## Análise de Correspondência
+
+![Figura 1 - Análise de correspondência múltipla para os indivíduos e as variáveis](images/paste-5.png)
+
+------------------------------------------------------------------------
+
+## Grupos Identificados pela Análise
+
+-   Grupo 1: 41,67% dos trabalhadores
+-   Grupo 2: 35,42% dos trabalhadores
+-   Grupo 3: 22,91% dos trabalhadores
+
+![Tabela 3 - Distribuição dos trabalhadores por classe](images/paste-4.png)
+
+## Grupos Identificados
+
+::: panel-tabset
+### Grupo 1 (41,67% dos trabalhadores)
+
+-   Já se intoxicaram com agrotóxicos
+-   Não usam EPI
+-   Justificam que o EPI dificulta o trabalho ou não têm costume
+-   Residem em casas na cidade
+
+### Grupo 2 (35,42% dos trabalhadores)
+
+-   Não relataram intoxicação por agrotóxicos
+-   Usam EPI incompleto
+-   Consideram os EPIs desconfortáveis
+-   Residem em casas na cidade
+
+### Grupo 3 (22,91% dos trabalhadores)
+
+-   Usam EPI completo
+-   Moram em barracas de lona na lavoura
+:::
+
+## Distribuição por Municípios
+
+-   Grupo 1: concentração em Goianápolis (35%) e Bonfinópolis (25%)
+-   Grupo 2: forte presença em Goianápolis (58,8%)
+-   Grupo 3: concentração em Corumbá de Goiás (54,5%) e Pirenópolis (45,5%)
+
+------------------------------------------------------------------------
+
+## Conclusões
+
+1.  As variáveis com maior contribuição para descrever o perfil do trabalhador foram:
+    -   Uso de equipamento de proteção
+    -   Relato de sintomas de intoxicação
+    -   Motivo para não uso de EPI
+2.  Identificaram-se três perfis distintos de trabalhadores quanto ao uso de EPI
+
+------------------------------------------------------------------------
+
+## Conclusões (cont.)
+
+3.  As variáveis "cuidados e recomendações" e "assistência técnica" não apresentaram associação significativa com grupos específicos
+
+4.  Há carência de:
+
+    -   Assistência técnica
+    -   Recomendações e cuidados no uso de agrotóxicos
+    -   Rotinas de trabalho seguras para os trabalhadores
+
+## Análise Crítica do Artigo
+
+### Limitações
+
+-   Não considera as condições de trabalho
+-   Não avalia as condições de uso dos EPIs
+-   Amostra limitada geograficamente
+-   Não explora causas subjacentes para a resistência ao uso de EPIs
+
+## Referências
+
+Alves, S.M.F., Fernandes, P.M., & Reis, E.F. (2009). Análise de correspondência como instrumento para descrição do perfil do trabalhador da cultura de tomate de mesa em Goiás. Ciência Rural, 39(7), 2042-2049.

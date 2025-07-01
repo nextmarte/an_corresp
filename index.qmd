@@ -580,22 +580,6 @@ kable(top_dim2_df, caption = "Top 5 Estatísticas Contribuindo para Dimensão 2"
       digits = 2) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
-# Criar um dataframe com as coordenadas e contribuições
-interpretacao <- data.frame(
-  Dimensao = c("Dimensão 1", "Dimensão 2"),
-  Variancia_Explicada = c(
-    paste0(round(ca_result$eig[1, 2], 2), "%"),
-    paste0(round(ca_result$eig[2, 2], 2), "%")
-  ),
-  Interpretacao = c(
-    "Esta dimensão separa as posições por características técnicas e táticas entre os times, destacando as diferenças de estilo de jogo entre Inter de Milão e Fluminense.",
-    "Esta dimensão contrasta funções específicas das posições, como defensivas vs. ofensivas, independentemente do time."
-  )
-)
-
-# Exibir a interpretação
-kable(interpretacao, caption = "Interpretação das Dimensões") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 # Visualização 3D da Análise de Correspondência
