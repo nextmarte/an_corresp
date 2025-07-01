@@ -92,11 +92,11 @@ kable(distribuicao_posicoes,
 ```
 
 # Conversão de Estatísticas Numéricas em Variáveis Categóricas
-Agora, vamos converter as principais estatísticas numéricas em variáveis categóricas binárias (Alto/Baixo), usando a mediana como ponto de corte:
+Vamos converter as estatísticas numéricas em variáveis categóricas, utilizando uma abordagem mais refinada que considera a distribuição dos dados e a natureza das estatísticas de futebol:
 
 ```{r}
-# Função para categorizar variáveis numéricas com apenas duas categorias em português
-categorizar_variavel <- function(x, prefixo) {
+# Função aprimorada para categorizar variáveis numéricas
+categorizar_variavel_aprimorada <- function(x, prefixo, posicao = NULL) {
   # Verificar se o vetor tem elementos
   if (length(x) == 0) {
     return(character(0))
@@ -125,12 +125,39 @@ categorizar_variavel <- function(x, prefixo) {
     return(categorias)
   }
   
-  # Caso contrário, usar a mediana para categorização binária (Alto/Baixo)
-  mediana <- median(x_clean, na.rm = TRUE)
+  # Verificar proporção de zeros
+  prop_zeros <- sum(x_clean == 0) / length(x_clean)
   
-  resultado <- rep(paste0(prefixo, "_Baixo"), length(x))
-  resultado[x > mediana] <- paste0(prefixo, "_Alto")
+  # Inicializar o resultado com NAs
+  resultado <- rep(NA, length(x))
+  
+  if (prop_zeros >= 0.3) {
+    # Se há muitos zeros, criar uma categoria específica para eles
+    resultado[x == 0] <- paste0(prefixo, "_Nenhum")
+    
+    # Para os valores não-zeros, aplicar quartis
+    x_nonzero <- x_clean[x_clean > 0]
+    if (length(x_nonzero) > 0) {
+      quartis <- quantile(x_nonzero, probs = c(0.33, 0.67), na.rm = TRUE)
+      resultado[x > 0 & x <= quartis[1]] <- paste0(prefixo, "_Baixo")
+      resultado[x > quartis[1] & x <= quartis[2]] <- paste0(prefixo, "_Médio") 
+      resultado[x > quartis[2]] <- paste0(prefixo, "_Alto")
+    }
+  } else {
+    # Caso contrário, usar quartis para toda a distribuição
+    quartis <- quantile(x_clean, probs = c(0.33, 0.67), na.rm = TRUE)
+    resultado[x <= quartis[1]] <- paste0(prefixo, "_Baixo")
+    resultado[x > quartis[1] & x <= quartis[2]] <- paste0(prefixo, "_Médio")
+    resultado[x > quartis[2]] <- paste0(prefixo, "_Alto")
+  }
+  
+  # Tratar NAs
   resultado[is.na(x)] <- paste0(prefixo, "_NA")
+  
+  # Se ainda houver valores NA no resultado (pode acontecer por discrepâncias), tratá-los
+  if (any(is.na(resultado))) {
+    resultado[is.na(resultado)] <- paste0(prefixo, "_Outro")
+  }
   
   return(resultado)
 }
@@ -171,7 +198,7 @@ variaveis_para_categorizar <- c(
 # Criar as variáveis categorizadas
 dados_categorizados <- dados
 
-# Loop com tradução para português e categorização binária
+# Loop com tradução para português e categorização aprimorada
 for (var in variaveis_para_categorizar) {
   # Remover caracteres especiais do nome da variável para criar o prefixo
   prefixo <- gsub("[^[:alnum:]]", "", var)
@@ -187,8 +214,8 @@ for (var in variaveis_para_categorizar) {
   
   # Capturar e reportar erros durante a categorização
   tryCatch({
-    # Categorizar a variável
-    resultado_cat <- categorizar_variavel(dados[[var]], prefixo_pt)
+    # Categorizar a variável com a função aprimorada
+    resultado_cat <- categorizar_variavel_aprimorada(dados[[var]], prefixo_pt)
     
     # Verificar se o resultado tem o comprimento correto
     if (length(resultado_cat) == nrow(dados)) {
@@ -221,6 +248,13 @@ kable(dados_cat_amostra,
       caption = "Amostra das variáveis categorizadas (primeiros 6 jogadores)") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
   scroll_box(width = "100%")
+
+# Analisar a distribuição das categorias para cada variável
+distribuicao_categorias <- list()
+for (var in variaveis_categorizadas) {
+  distribuicao_categorias[[var]] <- table(dados_categorizados[[var]])
+}
+
 ```
 
 # Construção da Tabela de Contingência por Posição e Time
@@ -713,4 +747,3 @@ fig_comparison <- fig_comparison %>%
 
 fig_comparison
 ```
-
